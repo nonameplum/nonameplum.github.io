@@ -1,31 +1,33 @@
-name: Github Pages
+name: Publish
 
 on:
   push:
-    branches:
-    - main
+    branches: [ main ]
 
 jobs:
-  gh-pages:
+  build:
     runs-on: macOS-latest
-    container:
-      image: "swift:5.2"
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-        
-    - name: Build Publish
-      run: |
-        git clone https://github.com/JohnSundell/Publish.git
-        cd Publish
-        make
-
-    - name: Generate Site
-      run: publish generate
-
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v2
+    - uses: actions/checkout@v2
+  
+    - name: Generate blog
+      run: swift run PlumBlog
+    - name: Publish in github pages repo
+      uses: crazy-max/ghaction-github-pages@v1.4.0
+      with:
+        repo: nonameplum/nonameplum.github.io
+        target_branch: master
+        keep_history: true
+        allow_empty_commit: false
+        build_dir: Output
+        committer_name: Łukasz Śliwiński 
+        commit_message: Update blog content
       env:
-        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        PUBLISH_BRANCH: master
-        PUBLISH_DIR: ./Output
+        GITHUB_PAT: ${{ secrets.REPO_TOKEN }}
+        
+    - name: Add & Commit changes
+      uses: EndBug/add-and-commit@v4.0.1
+      with:
+        author_name: Łukasz Śliwiński
+        message: Commit new output
