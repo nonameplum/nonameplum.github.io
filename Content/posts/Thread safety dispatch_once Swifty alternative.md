@@ -25,7 +25,6 @@ struct Once {
         action()
     }
 }
-
 ```
 
 Example of use:
