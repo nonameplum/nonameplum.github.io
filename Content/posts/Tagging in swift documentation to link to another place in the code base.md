@@ -4,6 +4,8 @@ description: Tagging in swift documentation to link to another place in the code
 tags: Xcode,swift
 tagColors: Xcode=006b75,swift=1d76db
 ---
+# Tag - Swift documentation markup
+
 [Swift documentation markup](https://developer.apple.com/library/archive/documentation/Xcode/Reference/xcode_markup_formatting_ref/) is not clear how to link to other type definition/method/... from the documentation.
 It can be done using `Tag` element.
 

@@ -12,20 +12,6 @@ extension Theme where Site == PlumBlog {
     }
 }
 
-private let styleFiles = ["styles.css", "code.css"]
-private let fonts = ["Fira Sans", "Fira Code", "Comfortaa"]
-
-private func googleApisFontsURL() -> String {
-    guard var urlComponents = URLComponents(string: "https://fonts.googleapis.com")
-    else { fatalError("Can not create the google apis fonts URL") }
-
-    urlComponents.path = "/css2"
-    urlComponents.queryItems = fonts.map {
-        URLQueryItem(name: "family", value: $0.replacingOccurrences(of: " ", with: "+"))
-    }
-    return urlComponents.url!.absoluteString
-}
-
 private struct BlogHTMLFactory: HTMLFactory {
     private let resourcePaths = styleFiles.map(Path.init)
 
@@ -189,21 +175,21 @@ extension Node where Context == HTML.BodyContext {
             .wrapper(
                 .div(
                     .class("title"),
+                    .a(.class("site-logo"), .href("/"), .text("📱")),
                     .a(.class("site-name"), .href("/"), .text("Łukasz Śliwiński")),
                     .a(.class("site-subname"), .href("/"), .text("Software Developer Blog"))
-                ),
-                .div(
-                    .class("logo"),
-                    .text("🖥📱💻")
                 ),
                 .div(
                     .class("avatar-wrapper"),
                     .unwrap(
                         context.site.avatarURL,
                         {
-                            .img(
-                                .src($0),
-                                .class("avatar")
+                            .a(
+                                .href("https://github.com/nonameplum"),
+                                .img(
+                                    .src($0),
+                                    .class("avatar")
+                                )
                             )
                         }
                     )
@@ -237,11 +223,20 @@ extension Node where Context == HTML.BodyContext {
                         .h1(
                             .a(
                                 .href(item.path),
-                                .text(item.title)
+                                .text(item.description)
+                            ),
+                            .unwrap(
+                                item.readTime().time,
+                                {
+                                    .span(
+                                        .class("time"),
+                                        "\($0) min"
+                                    )
+                                }
                             )
                         ),
-                        .tagList(for: item, on: site),
-                        .p(.text(item.description))
+                        .p(.text(item.title)),
+                        .tagList(for: item, on: site)
                     )
                 )
             }
@@ -252,26 +247,13 @@ extension Node where Context == HTML.BodyContext {
         return .ul(
             .class("tag-list"),
             .forEach(item.tags) { tag in
-                let styleNode: Node? = item.metadata.tagColors?
-                    .first(where: { $0.tag == tag.string })
-                    .map { .style("background-color: #\($0.color);") }
-
-                return styleNode.map({
-                    .li(
-                        $0,
-                        .a(
-                            .href(site.path(for: tag)),
-                            .text(tag.string)
-                        )
+                .li(
+                    .unwrap(tagStyle(for: item, tag: tag), { $0 }),
+                    .a(
+                        .href(site.path(for: tag)),
+                        .text(tag.string)
                     )
-                })
-                    ?? .li(
-                        .style("background-color: red;"),
-                        .a(
-                            .href(site.path(for: tag)),
-                            .text(tag.string)
-                        )
-                    )
+                )
             }
         )
     }
@@ -292,6 +274,12 @@ extension Node where Context == HTML.BodyContext {
                 )
             )
         )
+    }
+
+    fileprivate static func tagStyle(for item: Item<PlumBlog>, tag: Tag) -> Node? {
+        return item.metadata.tagColors?
+            .first(where: { $0.tag == tag.string })
+            .map { .style("background-color: #\($0.color);") }
     }
 }
 

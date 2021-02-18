@@ -1,5 +1,5 @@
 code {
-    font-family: 'Fira Code', monospace;
+    font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
     background-color: #F5F5F5;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
@@ -82,5 +82,48 @@ pre code .preprocessing {
 }
 
 @media (prefers-color-scheme: dark) {
+    code {
+        background-color: #1C1E20;
+        color: #D6D6D6;
+    }
 
+    pre code {
+        color: #D6D6D6;
+    }
+
+    pre code .keyword {
+        color: #C679DD;
+    }
+
+    pre code .type {
+        color: #68DEA8;
+    }
+
+    pre code .call {
+        color: #61AEEF;
+    }
+
+    pre code .property {
+        color: #DF6A73;
+    }
+
+    pre code .number {
+        color: #D2945D;
+    }
+
+    pre code .string {
+        color: #90C378;
+    }
+
+    pre code .comment {
+        color: #59626F;
+    }
+
+    pre code .dotAccess {
+        color: #61AEEF;
+    }
+
+    pre code .preprocessing {
+        color: #23FF0C;
+    }
 }

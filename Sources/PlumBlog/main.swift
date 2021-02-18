@@ -32,7 +32,7 @@ struct PlumBlog: Website {
     }
 
     var url = URL(string: "https://nonameplum.github.io")!
-    var name = "SDB"
+    var name = "Łukasz Śliwiński"
     var description = "Software Developer Blog"
     var language: Language { .english }
     var imagePath: Path? { nil }

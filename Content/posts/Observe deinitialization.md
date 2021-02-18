@@ -4,7 +4,7 @@ description: Observe deinitialization
 tags: swift
 tagColors: swift=1d76db
 ---
-### An extension to allow observation when an object is deallocated.
+# An extension to allow observation when an object is deallocated.
 
 ```swift
 // MARK: Deinit observation

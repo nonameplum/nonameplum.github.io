@@ -4,20 +4,20 @@ description: Custom Key Binding for Xcode to join lines
 tags: Xcode
 tagColors: Xcode=006b75
 ---
-### Custom Key Binding for Xcode to join lines
+# How to add join lines shortcut to Xcode
 
 Add the section below to the file `IDETextKeyBindingSet.plist` that might be located at:
 `/Applications/Xcode.app/Contents/Frameworks/IDEKit.framework/Versions/A/Resources/IDETextKeyBindingSet.plist`
 depending where the Xcode app is placed and named.
 
 ```xml
-    <key>Custom</key>
-    <dict>
-        <key>Join Lines</key>
-        <string>moveDown:, moveToEndOfText:, moveToBeginningOfText:, deleteToBeginningOfLine:, deleteBackward:</string>
-        <key>Join Lines Backward</key>
-        <string>moveToEndOfText:, moveToBeginningOfText:, deleteToBeginningOfLine:, deleteBackward:</string>
-    </dict>
+<key>Custom</key>
+<dict>
+    <key>Join Lines</key>
+    <string>moveDown:, moveToEndOfText:, moveToBeginningOfText:, deleteToBeginningOfLine:, deleteBackward:</string>
+    <key>Join Lines Backward</key>
+    <string>moveToEndOfText:, moveToBeginningOfText:, deleteToBeginningOfLine:, deleteBackward:</string>
+</dict>
 ```
 
 `Join Lines` joins the lines forward, the other one backward.

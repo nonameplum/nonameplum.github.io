@@ -1,6 +1,6 @@
 ---
 date: 2021-02-11 14:49
-description: Plum's Xcode themes
+description: My Xcode themes
 tags: Xcode
 tagColors: Xcode=006b75
 ---
