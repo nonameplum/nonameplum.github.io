@@ -43,6 +43,7 @@ pre code {
     overflow-x: auto;
     white-space: pre;
     -webkit-overflow-scrolling: touch;
+    overflow-wrap: anywhere;
 }
 
 pre code .keyword {
