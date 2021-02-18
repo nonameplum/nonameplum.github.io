@@ -37,6 +37,7 @@ struct PlumBlog: Website {
     var language: Language { .english }
     var imagePath: Path? { nil }
     var avatarURL: URL? = nil
+    var favicon: Favicon? = Favicon(path: "favicon.ico", type: "image/x-icon")
 }
 
 downloadGitHubIssues()

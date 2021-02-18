@@ -312,6 +312,18 @@ extension Node where Context == HTML.DocumentContext {
             .url(site.url(for: location)),
             .title(title),
             .description(description),
+            .meta(
+                .httpEquiv("cache-control"),
+                .content("no-cache")
+            ),
+            .meta(
+                .httpEquiv("expires"),
+                .content("no-cache")
+            ),
+            .meta(
+                .httpEquiv("pragma"),
+                .content("no-cache")
+            ),
             .twitterCardType(location.imagePath == nil ? .summary : .summaryLargeImage),
             .forEach(stylesheetPaths, { .stylesheet($0) }),
             .link(
@@ -339,5 +351,11 @@ extension Node where Context == HTML.DocumentContext {
                 }
             )
         )
+    }
+}
+
+extension Attribute where Context == HTML.MetaContext {
+    static func httpEquiv(_ value: String) -> Attribute {
+        Attribute(name: "http-equiv", value: value)
     }
 }
