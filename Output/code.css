@@ -1,0 +1,129 @@
+code {
+    font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+    background-color: #F5F5F5;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-collapse: collapse;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    box-sizing: border-box;
+    color: #1E1E1E;
+    display: inline;
+    font-size: 13px;
+    height: auto;
+    line-height: 19.5px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    overflow-wrap: break-word;
+    padding-bottom: 2.6px;
+    padding-left: 5.2px;
+    padding-right: 5.2px;
+    padding-top: 2.6px;
+    text-indent: 0px;
+    text-size-adjust: 100%;
+    width: auto;
+    -webkit-border-horizontal-spacing: 0px;
+    -webkit-border-vertical-spacing: 0px;
+}
+
+pre {
+    margin-bottom: 1.5em;
+    padding: 6px 0;
+    border-radius: 6px;
+}
+
+pre code {
+    display: block;
+    padding: 16px 16px;
+    color: #1E1E1E;
+    line-height: 21px;
+    font-size: 14px;
+    overflow-x: auto;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+}
+
+pre code .keyword {
+    color: #AF49CF;
+}
+
+pre code .type {
+    color: #179827;
+}
+
+pre code .call {
+    color: #0586EF;
+}
+
+pre code .property {
+    color: #DF2D3B;
+}
+
+pre code .number {
+    color: #B27E4F;
+}
+
+pre code .string {
+    color: #5C6727;
+}
+
+pre code .comment {
+    color: #737373;
+}
+
+pre code .dotAccess {
+    color: #007F7F;
+}
+
+pre code .preprocessing {
+    color: #7F41ED;
+}
+
+@media (prefers-color-scheme: dark) {
+    code {
+        background-color: #1C1E20;
+        color: #D6D6D6;
+    }
+
+    pre code {
+        color: #D6D6D6;
+    }
+
+    pre code .keyword {
+        color: #C679DD;
+    }
+
+    pre code .type {
+        color: #68DEA8;
+    }
+
+    pre code .call {
+        color: #61AEEF;
+    }
+
+    pre code .property {
+        color: #DF6A73;
+    }
+
+    pre code .number {
+        color: #D2945D;
+    }
+
+    pre code .string {
+        color: #90C378;
+    }
+
+    pre code .comment {
+        color: #59626F;
+    }
+
+    pre code .dotAccess {
+        color: #61AEEF;
+    }
+
+    pre code .preprocessing {
+        color: #23FF0C;
+    }
+}
