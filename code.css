@@ -44,6 +44,7 @@ pre code {
     white-space: pre;
     -webkit-overflow-scrolling: touch;
     overflow-wrap: anywhere;
+    overflow-wrap: normal;
 }
 
 pre code .keyword {
