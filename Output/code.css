@@ -44,6 +44,7 @@ pre code {
     white-space: pre;
     -webkit-overflow-scrolling: touch;
     overflow-wrap: anywhere;
+    overflow-wrap: normal;
 }
 
 pre code .keyword {
@@ -126,5 +127,15 @@ pre code .preprocessing {
 
     pre code .preprocessing {
         color: #23FF0C;
+    }
+}
+
+@media(max-width: 600px) {
+    pre code {
+        margin-left: -20px;
+        margin-right: -20px;
+        border-radius: 0px;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 }

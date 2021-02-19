@@ -40,8 +40,8 @@ struct PlumBlog: Website {
     var favicon: Favicon? = Favicon(path: "favicon.ico", type: "image/x-icon")
 }
 
-downloadGitHubIssues()
-let avatarURL = getAvatarURL()
+
+let avatarURL = createMarkdownFilesAndGetAvatarURL()
 
 try PlumBlog(avatarURL: avatarURL)
     .publish(

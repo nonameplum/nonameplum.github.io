@@ -214,16 +214,26 @@ extension Node where Context == HTML.BodyContext {
         )
     }
 
+    private static let itemDateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        return dateFormatter
+    }()
+
     fileprivate static func itemList(for items: [Item<PlumBlog>], on site: PlumBlog) -> Node {
         return .ul(
             .class("item-list"),
             .forEach(items) { item in
                 .li(
                     .article(
-                        .h1(
-                            .a(
-                                .href(item.path),
-                                .text(item.description)
+                        div(
+                            .class("article-title"),
+                            .h1(
+                                .a(
+                                    .href(item.path),
+                                    .text(item.description)
+                                )
                             ),
                             .unwrap(
                                 item.readTime().time,
@@ -235,8 +245,14 @@ extension Node where Context == HTML.BodyContext {
                                 }
                             )
                         ),
-                        .p(.text(item.title)),
-                        .tagList(for: item, on: site)
+                        .div(
+                            .tagList(for: item, on: site),
+                            .span(
+                                .class("date"),
+                                "\(itemDateFormatter.string(from: item.date))"
+                            )
+                        ),
+                        .p(.text(item.title))
                     )
                 )
             }

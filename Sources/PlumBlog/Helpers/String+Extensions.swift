@@ -1,7 +1,6 @@
 import Foundation
 
-public extension String {
-    
+extension String {
     func ranges(of string: String, options: CompareOptions = .literal) -> [Range<Index>] {
         var result: [Range<Index>] = []
         var start = startIndex
@@ -13,10 +12,18 @@ public extension String {
         }
         return result
     }
-    
+
     func slices(from: String, to: String) -> [String] {
         let pattern = "(?<=" + from + ").*?(?=" + to + ")"
         return ranges(of: pattern, options: .regularExpression)
             .map{ String(self[$0]) }
+    }
+}
+
+extension String {
+    var lines: [SubSequence] { split(whereSeparator: \.isNewline) }
+
+    func convertToUnixNewLine() -> String {
+        return self.replacingOccurrences(of: "\r\n", with: "\n")
     }
 }

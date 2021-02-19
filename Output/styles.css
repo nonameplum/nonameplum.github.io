@@ -9,6 +9,32 @@
     box-sizing: border-box;
 }
 
+.article-title {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #a0a0a0;
+}
+
+.article-title h1 {
+    grid-column: 1;
+    border: none;
+}
+
+.article-title .time {
+    grid-column: 2;
+    align-self: center;
+}
+
+.time {
+    font-size: 10px;
+    padding: 5px 8px;
+    border-radius: var(--border-radius);
+    background-color: #ffffff;
+    color: #303030;
+    font-weight: normal;
+}
+
 body {
     background: #fff;
     color: #000;
@@ -156,26 +182,23 @@ a {
 }
 
 .item-list h1 {
-    margin-bottom: 15px;
+    margin-bottom: 0px;
     font-size: 1.3em;
 }
 
 .item-list p {
-    margin-bottom: 15px;
-}
-
-.time {
-    font-size: 10px;
-    float: right;
-    padding: 5px 8px;
-    border-radius: var(--border-radius);
-    background-color: #ffffff;
-    color: #303030;
-    font-weight: normal;
+    margin-bottom: 0px;
 }
 
 .tag-list {
     margin-bottom: 15px;
+    display: inline-block;
+}
+
+.date {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 100px;
 }
 
 .tag-list li,
@@ -246,5 +269,16 @@ footer {
 @media(max-width: 600px) {
     .wrapper {
         padding: 40px 20px;
+    }
+
+    .tag-list {
+        display: block;
+        margin-bottom: 0px;
+    }
+
+    .date {
+        display: block;
+        margin-top: 4px;
+        margin-bottom: 10px;
     }
 }

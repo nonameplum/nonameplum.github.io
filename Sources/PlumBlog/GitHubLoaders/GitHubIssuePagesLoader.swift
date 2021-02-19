@@ -2,7 +2,7 @@ import Foundation
 
 struct GitHubIssuePagesLoader {
     // MARK: - Types
-    public typealias Result = Swift.Result<[Issue], Error>
+    typealias Result = Swift.Result<[Issue], Error>
     struct Issue: Decodable {
         struct Label: Decodable {
             let name: String
