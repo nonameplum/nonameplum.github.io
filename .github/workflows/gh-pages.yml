@@ -17,7 +17,7 @@ jobs:
       uses: crazy-max/ghaction-github-pages@v1.4.0
       with:
         repo: nonameplum/nonameplum.github.io
-        target_branch: master
+        target_branch: gh-pages
         keep_history: true
         allow_empty_commit: false
         build_dir: Output
