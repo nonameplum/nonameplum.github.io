@@ -1,5 +1,5 @@
 ---
-date: 2021-02-20 19:08
+date: 2021-02-20 18:08
 description: Magic way to calculate a duration that is needed to animate a view from position A to position B with given timing function
 tags: 
 tagColors: 
