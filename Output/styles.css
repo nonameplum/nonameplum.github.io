@@ -13,7 +13,7 @@
     display: grid;
     grid-template-columns: 1fr auto;
     margin-bottom: 15px;
-    border-bottom: 1px solid #a0a0a0;
+    border-bottom: 1px solid #cccccc;
 }
 
 .article-title h1 {
