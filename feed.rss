@@ -1,4 +1,140 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Łukasz Śliwiński</title><description>Software Developer Blog</description><link>https://nonameplum.github.io</link><language>en</language><lastBuildDate>Sat, 20 Feb 2021 07:55:10 +0000</lastBuildDate><pubDate>Sat, 20 Feb 2021 07:55:10 +0000</pubDate><ttl>250</ttl><atom:link href="https://nonameplum.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://nonameplum.github.io/posts/My%20Xcode%20themes</guid><title>Xcode theme (light &amp; dark)</title><description>My Xcode themes</description><link>https://nonameplum.github.io/posts/My%20Xcode%20themes</link><pubDate>Thu, 11 Feb 2021 13:49:00 +0000</pubDate><content:encoded><![CDATA[<h1>Xcode theme (light &amp; dark)</h1><h2>Installation</h2><h3>Manual</h3><p>Download and unzip <a href="https://github.com/nonameplum/blog/files/5965669/Plum_Xcode_Themes.zip">Plum<em>Xcode</em>Themes.zip</a> Copy <code>*.xccolortheme</code> files to <code>~/Library/Developer/Xcode/UserData/FontAndColorThemes/</code> (create the folder if doesn't exits yet)</p><h3>Bash script</h3><pre><code>mkdir ./<span class="type">Plum_Xcode_Themes</span>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Łukasz Śliwiński</title><description>Software Developer Blog</description><link>https://nonameplum.github.io</link><language>en</language><lastBuildDate>Sat, 20 Feb 2021 18:14:52 +0000</lastBuildDate><pubDate>Sat, 20 Feb 2021 18:14:52 +0000</pubDate><ttl>250</ttl><atom:link href="https://nonameplum.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://nonameplum.github.io/posts/Magic%20way%20to%20calculate%20a%20duration%20that%20is%20needed%20to%20animate%20a%20view%20from%20position%20A%20to%20position%20B%20with%20given%20timing%20function</guid><title>How to calculate a duration that is needed to animate a view from position A to position B with a given timing function</title><description>Magic way to calculate a duration that is needed to animate a view from position A to position B with given timing function</description><link>https://nonameplum.github.io/posts/Magic%20way%20to%20calculate%20a%20duration%20that%20is%20needed%20to%20animate%20a%20view%20from%20position%20A%20to%20position%20B%20with%20given%20timing%20function</link><pubDate>Sat, 20 Feb 2021 18:08:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to calculate a duration that is needed to animate a view from position A to position B with a given timing function</h1><p>A long time ago I had a problem to solve that I needed to know the exact time that will take to animate a view by x which might be in the middle of the desired position giving into account the timing function that the animation uses.</p><p>Here it is, an objective-c category:</p><pre><code><span class="comment">//  CAMediaTimingFunction+Duration.h</span>
+#import &lt;<span class="type">QuartzCore</span>/<span class="type">QuartzCore</span>.<span class="property">h</span>&gt;
+
+<span class="keyword">@interface</span> <span class="type">CAMediaTimingFunction</span> (<span class="type">Duration</span>)
+
+- (<span class="type">NSTimeInterval</span>)timeNeededToMoveByY:(<span class="type">CGFloat</span>)yMove totalYMove:(<span class="type">CGFloat</span>)totalYMove duration:(<span class="type">NSTimeInterval</span>)duration;
+
+<span class="keyword">@end</span>
+
+#import <span class="string">"CAMediaTimingFunction+Duration.h"</span>
+
+<span class="keyword">@implementation</span> <span class="type">CAMediaTimingFunction</span> (<span class="type">Duration</span>)
+
+- (<span class="type">NSTimeInterval</span>)timeNeededToMoveBy:(<span class="type">CGFloat</span>)move totalMove:(<span class="type">CGFloat</span>)totalMove duration:(<span class="type">NSTimeInterval</span>)<span class="call">duration</span> {
+    <span class="comment">// Using reference animation calculate needed time according to used timing function</span>
+    <span class="type">CGFloat</span> normalizedMove = move/totalMove;
+
+    <span class="comment">// View only just for calculation</span>
+    <span class="type">UIView</span> *view = [[<span class="type">UIView</span> alloc] initWithFrame:<span class="type">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>)];
+    <span class="type">CALayer</span> *referenceLayer = view.<span class="property">layer</span>;
+    referenceLayer.<span class="property">hidden</span> = <span class="type">YES</span>;
+    referenceLayer.<span class="property">speed</span> = <span class="number">0.0</span>;
+    [[<span class="type">UIApplication</span> sharedApplication].keyWindow addSubview:view];
+
+    <span class="comment">// Reference animation to calculate time</span>
+    <span class="type">CABasicAnimation</span> *basicAnimation =  [<span class="type">CABasicAnimation</span> animationWithKeyPath:<span class="string">@"frame"];</span>
+    basicAnimation.<span class="property">duration</span> = <span class="number">1.0</span>;
+    basicAnimation.<span class="property">timingFunction</span> = <span class="keyword">self</span>;
+    basicAnimation.<span class="property">fromValue</span> = [<span class="type">NSValue</span> valueWithCGRect:<span class="type">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>)];
+    basicAnimation.<span class="property">toValue</span> = [<span class="type">NSValue</span> valueWithCGRect:<span class="type">CGRectMake</span>(<span class="number">100</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>)];
+
+    [view.<span class="property">layer</span> addAnimation:basicAnimation forKey:<span class="string">@"evaluatorAnimation"];</span>
+
+    <span class="comment">// Force to run run-loop to get the presentation layer</span>
+    [[<span class="type">NSRunLoop</span> mainRunLoop] runUntilDate:[<span class="type">NSDate</span> date]];
+
+    <span class="type">NSUInteger</span> n = <span class="number">0</span>;
+    <span class="type">CGFloat</span> a = <span class="number">0.0</span>;
+    <span class="type">CGFloat</span> b = <span class="number">1.0</span>;
+    <span class="type">CGFloat</span> tolerance = <span class="number">0.005</span>;
+    <span class="type">CGFloat</span> move = <span class="number">0.0</span>;
+    <span class="type">CGFloat</span> middle = <span class="number">0.0</span>;
+
+    <span class="comment">// Biselection algorithm</span>
+    <span class="keyword">while</span> (n &lt; <span class="number">1000</span>) {
+        middle = (a + b)/<span class="number">2</span>;
+        referenceLayer.<span class="property">timeOffset</span> = middle;
+        <span class="comment">// Refresh animation to get updated presentation layer</span>
+        [[<span class="type">NSRunLoop</span> mainRunLoop] runUntilDate:[<span class="type">NSDate</span> date]];
+        move = referenceLayer.<span class="property">presentationLayer</span>.<span class="property">position</span>.<span class="property">x</span> / <span class="number">100</span>;
+
+        <span class="keyword">if</span> ((move - tolerance) &lt;= normalizedMove &amp;&amp; normalizedMove &lt;= (move + tolerance))
+            <span class="keyword">break</span>;
+
+        n += <span class="number">1</span>;
+        <span class="keyword">if</span> (normalizedMove &lt; move)
+            b = middle;
+        <span class="keyword">else</span>
+            a = middle;
+    }
+
+    [view removeFromSuperview];
+    <span class="keyword">return</span> middle * duration;
+}
+
+<span class="keyword">@end</span>
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://nonameplum.github.io/posts/iOS%20crash%20symbolication%20script</guid><title>A script to symbolicate crash log and verify if the crash log file matches the build UUID</title><description>iOS crash symbolication script</description><link>https://nonameplum.github.io/posts/iOS%20crash%20symbolication%20script</link><pubDate>Sat, 20 Feb 2021 16:38:00 +0000</pubDate><content:encoded><![CDATA[<h1>A script to symbolicate crash log and verify if the crash log file matches the build UUID</h1><p>To get the best symbolication result, or event to get a proper symbolication of a crash log, the appropriate <code>dSYM</code> and application build is required. The <code>symbolicatecrash</code> tool allows to symbolicate a crash log that doesn't exactly match the build and <code>dSYM</code> that you would like to use. This script besides the symbolication, it also checks if the crash log UUID matches the build UUID. Just run this script on a folder with your <code>.ipa</code>, the corresponding <code>.dSYM</code>, and (1+) <code>.crash</code> files. Will output symbolicated <code>sym-*.crash</code>es for you.</p><p><a href="https://gist.github.com/nonameplum/484f6a69487f912d89428a9253a14dac/archive/0eec4ccf3822dfc8fdf447b1f08dc0dcc25999a2.zip">Download the script</a></p><pre><code>#!/bin/bash
+#
+# <span class="type">Fool</span>'n'<span class="type">Lazy</span>-<span class="type">Proof</span> iOS .<span class="dotAccess">crash</span> <span class="type">Symbolication</span>
+#
+# <span class="type">Just</span> run this script on a folder with your `.ipa`, the corresponding `.dSYM`, 
+# and (<span class="number">1</span>+) `.crash` files. <span class="type">Will</span> output symbolicated `sym-*.crash`es <span class="keyword">for</span> you.
+#
+# <span class="type">Copyright</span> (c) <span class="number">2016</span> <span class="type">Ferran Poveda</span> (<span class="keyword">@fbeeper</span>)
+# <span class="type">Provided</span> under <span class="type">MIT License</span> (<span class="type">MIT</span>): http://choosealicense.<span class="property">com</span>/licenses/mit/
+#
+# <span class="type">Extended</span> by <span class="type">Lukasz Sliwinski</span> to check equality of the build's <span class="type">UUID</span> with the crash logs
+#
+
+function <span class="call">checkForRequiredFileOfType</span>() 
+{ 
+	count=`find $1 -print -quit <span class="number">2</span>&gt; /dev/null | wc -l | awk '{print \$1}'`
+	<span class="keyword">if</span> [[ $count &gt; <span class="number">0</span> ]]; then
+		echo <span class="string">"Found a $1 file"</span>
+	<span class="keyword">else</span>
+		echo <span class="string">"Missing a $1 file! Need *.ipa + *.dSYM + *.crash files."</span>
+		exit
+	fi
+}
+
+function <span class="call">checkForRequiredFiles</span>()
+{
+	checkForRequiredFileOfType <span class="string">"*.ipa"</span>
+	checkForRequiredFileOfType <span class="string">"*.dSYM"</span>
+	checkForRequiredFileOfType <span class="string">"*.crash"</span>
+}
+
+# <span class="type">Define</span> location of symbolicatecrash binary (defaults to <span class="type">Xcode</span> location, but can be defined on params)
+symbolicatecrash=${symbolicatecrash:-/<span class="type">Applications</span>/<span class="type">Xcode</span>.<span class="property">app</span>/<span class="type">Contents</span>/<span class="type">SharedFrameworks</span>/<span class="type">DVTFoundation</span>.<span class="property">framework</span>/<span class="type">Versions</span>/<span class="type">A</span>/<span class="type">Resources</span>/symbolicatecrash}
+
+# <span class="type">Let</span>'s make sure you haven't forgotten any file
+checkForRequiredFiles
+
+# <span class="type">Extract</span> .<span class="dotAccess">ipa</span> and define <span class="keyword">where</span> the binary <span class="keyword">is</span> (assuming it has the same name)
+ipa=`find *.ipa -print -quit`
+bsdtar -xf <span class="string">"$ipa"</span> -s'|[^/]*/||'
+app=`find *.app -print -quit`
+app=<span class="string">"$app$/${app%.*}"</span>
+
+dSYM=`find *.dSYM -print -quit`
+uuid=`dwarfdump -u $dSYM | perl -ne 'print $1 <span class="keyword">if</span> /<span class="type">UUID</span>: (.*) \(arm64\)/s' | cut -c <span class="number">1</span>-<span class="number">42</span> | tr -d '-' | awk '{ print <span class="call">tolower</span>($0) }'`
+
+echo <span class="string">""</span>
+echo <span class="string">"Build UUDD: $uuid"</span>
+echo <span class="string">""</span>
+
+# <span class="type">Symbolicate</span> all .<span class="dotAccess">crash</span> files
+export <span class="type">DEVELOPER_DIR</span>=<span class="string">"/Applications/Xcode.app/Contents/Developer"</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> *.crash; <span class="keyword">do
+
+	if</span> [[ ! $i == sym* ]]; then # <span class="type">Skips</span> previous output files from this script
+
+		build_name=`grep '{<span class="string">"app_name"</span>:' $i | perl -ne 'print $1 <span class="keyword">if</span> /{<span class="string">"app_name"</span>:<span class="string">"([^"</span>]+)<span class="string">","</span>/s' | awk '{ <span class="call">print</span>($0) }'`
+
+		crashFileUuid=`grep --after-context=<span class="number">1000</span> <span class="string">"Binary Images:"</span> $i | grep <span class="string">"$build_name arm64"</span> | perl -ne 'print $1 <span class="keyword">if</span> /.*&lt;(.*)&gt;/s' | awk '{ <span class="call">print</span>($0) }'`
+
+		<span class="keyword">if</span> [ <span class="string">"$uuid"</span> == <span class="string">"$crashFileUuid"</span> ]; then
+			<span class="string">"$symbolicatecrash" "$i" "$app"</span> &gt; <span class="string">"sym-$i"</span>
+			echo <span class="string">"✅ Symbolicated $i"</span>
+		<span class="keyword">else</span>
+			echo <span class="string">"❌ skipped $i (crash UUID [$crashFileUuid] do not match build's UUID: [$uuid]"</span>
+		fi
+
+	fi
+
+done
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://nonameplum.github.io/posts/My%20Xcode%20themes</guid><title>Xcode theme (light &amp; dark)</title><description>My Xcode themes</description><link>https://nonameplum.github.io/posts/My%20Xcode%20themes</link><pubDate>Thu, 11 Feb 2021 13:49:00 +0000</pubDate><content:encoded><![CDATA[<h1>Xcode theme (light &amp; dark)</h1><h2>Installation</h2><h3>Manual</h3><p>Download and unzip <a href="https://github.com/nonameplum/blog/files/5965669/Plum_Xcode_Themes.zip">Plum<em>Xcode</em>Themes.zip</a> Copy <code>*.xccolortheme</code> files to <code>~/Library/Developer/Xcode/UserData/FontAndColorThemes/</code> (create the folder if doesn't exits yet)</p><h3>Bash script</h3><pre><code>mkdir ./<span class="type">Plum_Xcode_Themes</span>
 curl --show-error --location https://github.<span class="property">com</span>/nonameplum/blog/files/<span class="number">5965669</span>/<span class="type">Plum_Xcode_Themes</span>.<span class="property">zip</span> | tar -xf - -<span class="type">C</span> ./<span class="type">Plum_Xcode_Themes</span>
 cd ./<span class="type">Plum_Xcode_Themes</span>
 mkdir ~/<span class="type">Library</span>/<span class="type">Developer</span>/<span class="type">Xcode</span>/<span class="type">UserData</span>/<span class="type">FontAndColorThemes</span>/
