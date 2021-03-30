@@ -1,5 +1,5 @@
 ---
-date: 2021-01-14 10:46
+date: 2021-01-14 11:46
 description: Observe deinitialization
 tags: swift
 tagColors: swift=1d76db

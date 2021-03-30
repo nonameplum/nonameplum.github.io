@@ -1,8 +1,8 @@
 ---
-date: 2021-02-20 16:38
+date: 2021-02-20 17:38
 description: iOS crash symbolication script
-tags: 
-tagColors: 
+tags: Xcode
+tagColors: Xcode=006b75
 ---
 # A script to symbolicate crash log and verify if the crash log file matches the build UUID
 

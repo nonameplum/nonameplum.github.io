@@ -30,4 +30,4 @@ jobs:
       uses: EndBug/add-and-commit@v4.0.1
       with:
         author_name: Łukasz Śliwiński
-        message: Commit new output
+        message: Commit new content
