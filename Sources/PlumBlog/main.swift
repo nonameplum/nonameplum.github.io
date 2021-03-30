@@ -46,7 +46,7 @@ let avatarURL = createMarkdownFilesAndGetAvatarURL()
 try PlumBlog(avatarURL: avatarURL)
     .publish(
         withTheme: .blog,
-        deployedUsing: .gitHub("nonameplum/nonameplum.github.io"),
+        deployedUsing: .gitHub("nonameplum/nonameplum.github.io", branchName: "gh-pages"),
         plugins: [
             .splash(withClassPrefix: "")
         ]
