@@ -1,5 +1,5 @@
 ---
-date: 2021-02-20 17:38
+date: 2021-02-20 16:38
 description: iOS crash symbolication script
 tags: Xcode
 tagColors: Xcode=006b75
