@@ -36,8 +36,6 @@ extension DeploymentMethod {
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
             let dateString = dateFormatter.string(from: Date())
 
-            Console.print("6")
-
             do {
                 try shellOut(
                     to: """
