@@ -10,7 +10,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-  
+    - name: Xcode 12
+    - run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
     - name: Generate blog
       run: swift run PlumBlog
     - name: Publish in github pages repo
