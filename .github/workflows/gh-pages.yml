@@ -10,10 +10,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Xcode 12
       run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
+
+    - name: Install publish by homebrew
+      run: brew install publish
+
     - name: Generate blog
-      run: swift run PlumBlog
+      run: publish generate
+
     - name: Publish in github pages repo
       uses: crazy-max/ghaction-github-pages@v1.4.0
       with:
