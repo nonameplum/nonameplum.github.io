@@ -1,5 +1,5 @@
 ---
-date: 2021-02-20 19:08
+date: 2021-02-20 18:08
 description: How to calculate time needed to animate by a given length according to the animation timing function
 tags: obj-c
 tagColors: obj-c=28AEEE
