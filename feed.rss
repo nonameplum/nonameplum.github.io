@@ -1,4 +1,70 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Łukasz Śliwiński</title><description>Software Developer Blog</description><link>https://nonameplum.github.io</link><language>en</language><lastBuildDate>Thu, 1 Apr 2021 18:48:48 +0000</lastBuildDate><pubDate>Thu, 1 Apr 2021 18:48:48 +0000</pubDate><ttl>250</ttl><atom:link href="https://nonameplum.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://nonameplum.github.io/posts/How%20to%20calculate%20time%20needed%20to%20animate%20by%20a%20given%20length%20according%20to%20the%20animation%20timing%20function</guid><title>How to calculate a duration that is needed to animate a view from position A to position B with a given timing function</title><description>How to calculate time needed to animate by a given length according to the animation timing function</description><link>https://nonameplum.github.io/posts/How%20to%20calculate%20time%20needed%20to%20animate%20by%20a%20given%20length%20according%20to%20the%20animation%20timing%20function</link><pubDate>Sat, 20 Feb 2021 18:08:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to calculate a duration that is needed to animate a view from position A to position B with a given timing function</h1><p>A long time ago I had a problem to solve that I needed to know the exact time that will take to animate a view by x which might be in the middle of the desired position giving into account the timing function that the animation uses.</p><p>Here it is, an objective-c category:</p><pre><code><span class="comment">//  CAMediaTimingFunction+Duration.h</span>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Łukasz Śliwiński</title><description>Software Developer Blog</description><link>https://nonameplum.github.io</link><language>en</language><lastBuildDate>Sun, 4 Apr 2021 20:30:20 +0000</lastBuildDate><pubDate>Sun, 4 Apr 2021 20:30:20 +0000</pubDate><ttl>250</ttl><atom:link href="https://nonameplum.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://nonameplum.github.io/posts/Helper%20method%20to%20execute%20an%20action%20on%20viewDidLoad%20of%20a%20UIViewController</guid><title>How to execute an action on viewDidLoad of an UIViewController</title><description>Helper method to execute an action on viewDidLoad of a UIViewController</description><link>https://nonameplum.github.io/posts/Helper%20method%20to%20execute%20an%20action%20on%20viewDidLoad%20of%20a%20UIViewController</link><pubDate>Sun, 4 Apr 2021 20:27:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to execute an action on viewDidLoad of an UIViewController</h1><pre><code><span class="keyword">private var</span> onViewLoadContext: <span class="type">UInt8</span> = <span class="number">0</span>
+
+<span class="keyword">public protocol</span> UIViewControllerOnViewLoadProtocol { }
+
+<span class="keyword">extension</span> <span class="type">UIViewController</span>: <span class="type">UIViewControllerOnViewLoadProtocol</span> { }
+
+<span class="keyword">private class</span> OnViewControllerViewLoadObserver&lt;T&gt;: <span class="type">NSObject</span> {
+    <span class="keyword">private var</span> handlers: [(<span class="type">T</span>) -&gt; <span class="type">Void</span>]
+    <span class="keyword">var</span> token: <span class="type">NSKeyValueObservation</span>?
+
+    <span class="keyword">init</span> (<span class="keyword">_</span> handler: <span class="keyword">@escaping</span> (<span class="type">T</span>) -&gt; <span class="type">Void</span>) {
+        <span class="keyword">self</span>.<span class="property">handlers</span> = [handler]
+    }
+
+    <span class="keyword">func</span> invoke(<span class="keyword">_</span> value: <span class="type">T</span>) {
+        <span class="keyword">self</span>.<span class="property">handlers</span>.<span class="call">forEach</span> { handler <span class="keyword">in</span>
+            <span class="call">handler</span>(value)
+        }
+    }
+
+    <span class="keyword">func</span> add(handler: <span class="keyword">@escaping</span> (<span class="type">T</span>) -&gt; <span class="type">Void</span>) {
+        <span class="keyword">self</span>.<span class="property">handlers</span>.<span class="call">append</span>(handler)
+    }
+}
+
+<span class="keyword">public extension</span> <span class="type">UIViewControllerOnViewLoadProtocol</span> <span class="keyword">where</span> <span class="type">Self</span>: <span class="type">UIViewController</span> {
+    <span class="comment">/// Add handler when view controller's view is set by the framework
+    ///
+    /// - Attention: Be aware of memory leak that can be caused if any reference holded by `self` is used
+    /// inside the handler callback. For that purpose use the instance passed in the handler parameter.
+    ///
+    /// - Parameters:
+    ///     - handler: Callback that will be called when UIKit will set view controller's view.
+    ///     Instance passed in the handler parameter is optional because is weakified.
+    ///
+    /// - Tag: addOnViewLoad</span>
+    <span class="keyword">func</span> addOnViewLoad(handler: <span class="keyword">@escaping</span> (<span class="type">Self</span>?) -&gt; <span class="type">Void</span>) {
+        <span class="keyword">let</span> observer: <span class="type">OnViewControllerViewLoadObserver</span>&lt;<span class="type">Self</span>?&gt;
+        <span class="keyword">if let</span> existingObserver = <span class="call">objc_getAssociatedObject</span>(<span class="keyword">self</span>, &amp;onViewLoadContext) <span class="keyword">as</span>? <span class="type">OnViewControllerViewLoadObserver</span>&lt;<span class="type">Self</span>?&gt; {
+            observer = existingObserver
+            observer.<span class="call">add</span>(handler: handler)
+        } <span class="keyword">else</span> {
+            observer = <span class="type">OnViewControllerViewLoadObserver</span>(handler)
+            <span class="call">objc_setAssociatedObject</span>(
+                <span class="keyword">self</span>,
+                &amp;onViewLoadContext,
+                observer,
+                objc_AssociationPolicy.<span class="type">OBJC_ASSOCIATION_RETAIN_NONATOMIC</span>
+            )
+
+            observer.<span class="property">token</span> = <span class="keyword">self</span>.<span class="call">observe</span>(\.<span class="property">view</span>) { [<span class="keyword">weak</span> observer, weak <span class="keyword">self</span>] (<span class="keyword">_</span>, <span class="keyword">_</span>) <span class="keyword">in</span>
+                observer?.<span class="call">invoke</span>(<span class="keyword">self</span>)
+            }
+        }
+    }
+
+    <span class="comment">/// Remove a handler added by [addOnViewLoad](x-source-tag://addOnViewLoad)</span>
+    <span class="keyword">func</span> removeOnViewLoad() {
+        <span class="call">objc_setAssociatedObject</span>(
+            <span class="keyword">self</span>,
+            &amp;onViewLoadContext,
+            <span class="keyword">nil</span>,
+            objc_AssociationPolicy.<span class="type">OBJC_ASSOCIATION_RETAIN_NONATOMIC</span>
+        )
+    }
+}
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://nonameplum.github.io/posts/How%20to%20calculate%20time%20needed%20to%20animate%20by%20a%20given%20length%20according%20to%20the%20animation%20timing%20function</guid><title>How to calculate a duration that is needed to animate a view from position A to position B with a given timing function</title><description>How to calculate time needed to animate by a given length according to the animation timing function</description><link>https://nonameplum.github.io/posts/How%20to%20calculate%20time%20needed%20to%20animate%20by%20a%20given%20length%20according%20to%20the%20animation%20timing%20function</link><pubDate>Sat, 20 Feb 2021 18:08:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to calculate a duration that is needed to animate a view from position A to position B with a given timing function</h1><p>A long time ago I had a problem to solve that I needed to know the exact time that will take to animate a view by x which might be in the middle of the desired position giving into account the timing function that the animation uses.</p><p>Here it is, an objective-c category:</p><pre><code><span class="comment">//  CAMediaTimingFunction+Duration.h</span>
 #import &lt;<span class="type">QuartzCore</span>/<span class="type">QuartzCore</span>.<span class="property">h</span>&gt;
 
 <span class="keyword">@interface</span> <span class="type">CAMediaTimingFunction</span> (<span class="type">Duration</span>)
