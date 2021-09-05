@@ -5,36 +5,41 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    runs-on: macOS-latest
+  macos:
+    name: MacOS
+    runs-on: macOS-11.0
+    strategy:
+      matrix:
+        xcode:
+          - 12.5
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Xcode 12
-      run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
+      - name: Select Xcode ${{ matrix.xcode }}
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
 
-    - name: Install publish by homebrew
-      run: brew install publish
+      - name: Install publish by homebrew
+        run: brew install publish
 
-    - name: Generate blog
-      run: publish generate
+      - name: Generate blog
+        run: publish generate
 
-    - name: Publish in github pages repo
-      uses: crazy-max/ghaction-github-pages@v1.4.0
-      with:
-        repo: nonameplum/nonameplum.github.io
-        target_branch: gh-pages
-        keep_history: true
-        allow_empty_commit: false
-        build_dir: Output
-        committer_name: Łukasz Śliwiński 
-        commit_message: Update blog content
-      env:
-        GITHUB_PAT: ${{ secrets.REPO_TOKEN }}
-        
-    - name: Add & Commit changes
-      uses: EndBug/add-and-commit@v4.0.1
-      with:
-        author_name: Łukasz Śliwiński
-        message: Commit new content
+      - name: Publish in github pages repo
+        uses: crazy-max/ghaction-github-pages@v1.4.0
+        with:
+          repo: nonameplum/nonameplum.github.io
+          target_branch: gh-pages
+          keep_history: true
+          allow_empty_commit: false
+          build_dir: Output
+          committer_name: Łukasz Śliwiński 
+          commit_message: Update blog content
+        env:
+          GITHUB_PAT: ${{ secrets.REPO_TOKEN }}
+          
+      - name: Add & Commit changes
+        uses: EndBug/add-and-commit@v4.0.1
+        with:
+          author_name: Łukasz Śliwiński
+          message: Commit new content
