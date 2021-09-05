@@ -1,5 +1,5 @@
 ---
-date: 2021-02-09 23:00
+date: 2021-02-09 22:00
 description: Thread safety dispatch_once Swifty alternative
 tags: swift
 tagColors: swift=1d76db
