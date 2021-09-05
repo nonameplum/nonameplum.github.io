@@ -1,8 +1,8 @@
 ---
 date: 2021-09-05 11:12
 description: ESPHome custom component vs component (contribution) development
-tags: 
-tagColors: 
+tags: ESPHome
+tagColors: ESPHome=254F9C
 ---
 # Difference of development between custom component and full-fledged component for ESPHome
 
