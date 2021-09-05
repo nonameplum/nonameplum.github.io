@@ -7,10 +7,13 @@ tagColors: ESPHome=254F9C
 # Difference of development between custom component and full-fledged component for ESPHome
 
 There are two approaches that can be used to develop a custom component for ESPHome:
-1. A simplified version described in the ESPHome documentation ([Custom Sensor Compoent](https://esphome.io/components/sensor/custom.html) and [Generic Custom Component](https://esphome.io/custom/custom_component.html)) that doesn't provide as much reusability as the "full-fledged" component 
+1. A simplified version described in the ESPHome documentation ([Custom Sensor Compoent](https://esphome.io/components/sensor/custom.html) and [Generic Custom Component](https://esphome.io/custom/custom_component.html))
 2. Native - "full-fledged" component that you can find e.g. [ESPHome Build-in Components](https://github.com/esphome/esphome/tree/dev/esphome/components) and its creation is described in the [Contribution Guide](https://esphome.io/guides/contributing.html)
 
 For better communication to distinguish components, I will call the former _Simple_ and the latter  _Native_.
+
+The main difference between the two is that _Native_ implementation provides better reusability, as you can use [`external_components`](https://esphome.io/components/external_components.html) feature to point to the local or remote (github) location in your `.yaml` device configuration to simply use some additional components except the build-in into ESPHome.
+Additionally _Native_ component has more advantages over the component configuration validation thanks to Python and configuration schemes.
 
 The _Simple_ component development is quite well described in the ESPHome documentation. In a nutshell, it just requires creating the `.h` + optionally `.cpp` file with the C++ (Arduino) component implementation and then the `yaml` file that registers the component so it can be used as any other ESPHome component. All that is clearly explained in the above documentation references.
 
