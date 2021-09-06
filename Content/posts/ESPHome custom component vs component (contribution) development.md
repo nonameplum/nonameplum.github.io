@@ -6,7 +6,7 @@ tagColors: ESPHome=254F9C
 ---
 # Difference of development between custom component and full-fledged component for ESPHome
 
-There are two approaches that can be used to develop a custom component for ESPHome:
+There are two approaches that can be used to develop a custom component for [ESPHome](https://esphome.io/):
 1. A simplified version described in the ESPHome documentation ([Custom Sensor Compoent](https://esphome.io/components/sensor/custom.html) and [Generic Custom Component](https://esphome.io/custom/custom_component.html))
 2. Native - "full-fledged" component that you can find e.g. [ESPHome Build-in Components](https://github.com/esphome/esphome/tree/dev/esphome/components) and its creation is described in the [Contribution Guide](https://esphome.io/guides/contributing.html)
 

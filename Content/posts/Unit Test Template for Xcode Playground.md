@@ -7,9 +7,8 @@ tagColors: Xcode=006b75
 # How to add custom template useful for the Unit Test directly in the Xcode Playgroud
 
 Custom template that allows to write unit tests directly in the Xcode Playgroud with nice error/success messages:
-| Failure | Success |
-| --- | --- |
-| ![Screenshot 2021-09-05 at 14 11 30](https://user-images.githubusercontent.com/1753816/132126336-c6ac9414-e57d-4394-a3cb-65d0fac46d79.png) | ![Screenshot 2021-09-05 at 14 14 28](https://user-images.githubusercontent.com/1753816/132126405-a568738a-75dd-4e79-9d65-5e8ef0092baf.png) |
+![Screenshot 2021-09-05 at 14 11 30](https://user-images.githubusercontent.com/1753816/132126336-c6ac9414-e57d-4394-a3cb-65d0fac46d79.png)
+![Screenshot 2021-09-05 at 14 14 28](https://user-images.githubusercontent.com/1753816/132126405-a568738a-75dd-4e79-9d65-5e8ef0092baf.png)
 
 ## Installation
 ### Manual
