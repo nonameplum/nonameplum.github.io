@@ -23,8 +23,8 @@ Copy `Unit Test.xctemplate` directory to `~/Library/Developer/Xcode/Templates/Fi
 mkdir ./Unit_Test.xctemplate
 curl --show-error --location https://github.com/nonameplum/blog/files/7111526/Unit.Test.xctemplate.zip | tar -xf - -C ./Unit_Test.xctemplate
 cd ./Unit_Test.xctemplate
-mkdir ~/Library/Developer/Xcode/Templates/File\ Templates/Playground
-cp "./Unit Test.xctemplate" ~/Library/Developer/Xcode/Templates/File\ Templates/Playground
+mkdir -p ~/Library/Developer/Xcode/Templates/File\ Templates/Playground
+cp -R "./Unit Test.xctemplate" ~/Library/Developer/Xcode/Templates/File\ Templates/Playground
 ```
 
 Once you restart Xcode you should be able to see the _Unit Test_ template for a new playgroud:
