@@ -1,8 +1,8 @@
 ---
 date: 2022-02-28 10:48
 description: Setup a linkage and package for each dependency separately with CocoaPods
-tags: 
-tagColors: 
+tags: Xcode,CocoaPods
+tagColors: Xcode=006b75,CocoaPods=96006B
 ---
 # How to set up the linkage and package method separately for each dependency with CocoaPods
 

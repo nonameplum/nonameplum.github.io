@@ -1,8 +1,8 @@
 ---
 date: 2021-09-05 11:56
 description: Unit Test Template for Xcode Playground
-tags: Xcode
-tagColors: Xcode=006b75
+tags: swift,Xcode,tests
+tagColors: swift=1d76db,Xcode=006b75,tests=D57125
 ---
 # How to add custom template useful for the Unit Test directly in the Xcode Playgroud
 
