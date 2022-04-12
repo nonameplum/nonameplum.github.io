@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="og:site_name" content="Łukasz Śliwiński"/><link rel="canonical" href="https://nonameplum.github.io/posts/SwiftUI%20custom%20localization%20strings%20handling"/><meta name="twitter:url" content="https://nonameplum.github.io/posts/SwiftUI%20custom%20localization%20strings%20handling"/><meta name="og:url" content="https://nonameplum.github.io/posts/SwiftUI%20custom%20localization%20strings%20handling"/><title>How to handle localized strings from separate bundle or framework in SwiftUI | Łukasz Śliwiński</title><meta name="twitter:title" content="How to handle localized strings from separate bundle or framework in SwiftUI | Łukasz Śliwiński"/><meta name="og:title" content="How to handle localized strings from separate bundle or framework in SwiftUI | Łukasz Śliwiński"/><meta name="description" content="SwiftUI custom localization strings handling."/><meta name="twitter:description" content="SwiftUI custom localization strings handling."/><meta name="og:description" content="SwiftUI custom localization strings handling."/><meta http-equiv="cache-control" content="no-cache"/><meta http-equiv="expires" content="no-cache"/><meta http-equiv="pragma" content="no-cache"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><link rel="stylesheet" href="/code.css" type="text/css"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Łukasz Śliwiński"/></head><body class="item-page"><header><div class="wrapper"><div class="title"><a class="site-logo" href="/">📱</a><a class="site-name" href="/">Łukasz Śliwiński</a><a class="site-subname" href="/">Software Developer Blog</a></div><div class="avatar-wrapper"><a href="https://github.com/nonameplum"><img src="https://avatars.githubusercontent.com/u/1753816?v=4" class="avatar"/></a></div></div></header><div class="wrapper"><article><div class="content"><h1>How to handle localized strings from separate bundle or framework in SwiftUI</h1><p>SwiftUI provides a very handy <code>LocalizedStringKey</code> that can be used to e.g. initialized the <code>Text</code> view and others. It works differently from UIKit in that regard that if the localized strings leave in some other bundle than the main one from where by default SwiftUI tries to get the localized strings you have to pass that information to the <code>Text</code> <a href="https://developer.apple.com/documentation/swiftui/text/init(_:tablename:bundle:comment:">constructor</a>), in contrast to <a href="https://developer.apple.com/documentation/foundation/1418095-nslocalizedstring"><code>NSLocalizedString</code></a>.</p><p>It is connected to the fact how SwiftUI internally handles the possibility to easily override the locale used by the view using</p><pre><code>view.<span class="call">environment</span>(\.<span class="property">locale</span>, .<span class="keyword">init</span>(identifier: <span class="string">"pl"</span>))
+</code></pre><p>It is very handy, especially in the case of the SwiftUI Previews, so you can very easily see how the view will behave in all supported languages at once.</p><pre><code><span class="type">ForEach</span>(localizations, id: \.<span class="property">identifier</span>) { locale <span class="keyword">in</span>
+    <span class="type">Text</span>(<span class="string">"Hello"</span>)
+        .<span class="call">environment</span>(\.<span class="property">locale</span>, locale)
+        .<span class="call">previewDisplayName</span>(<span class="type">Locale</span>.<span class="property">current</span>.<span class="call">localizedString</span>(forIdentifier: locale.<span class="property">identifier</span>))
+}
+</code></pre><p>The problem is when you would like to use <code>NSLocalizedString</code> to get the localized strings, or you have a custom implementation for the localized strings handling. Then most probably you will lose the ability to set the locale by <code>.environment(\.locale, locale)</code> on the views because it won't be respected. As the environment value is available in the <code>View</code> context. <code>Locale.current</code> stays the same across the app anyway.</p><p>To overcome that issue I came up with a solution that allows to still be able to override the locale environment and provide a custom implementation of the localized strings.</p><pre><code><span class="keyword">struct</span> LocalizedText: <span class="type">View</span> {
+    <span class="keyword">@Environment</span>(\.<span class="property">locale</span>) <span class="keyword">var</span> locale
+    <span class="keyword">let</span> key: <span class="type">String</span>
+    <span class="keyword">let</span> localizedString: (<span class="keyword">_</span> languageCode: <span class="type">String</span>?, <span class="keyword">_</span> key: <span class="type">String</span>) -&gt; (<span class="type">String</span>)
+
+    <span class="keyword">var</span> body: <span class="type">Text</span> {
+        <span class="keyword">let</span> languageCode = locale.<span class="property">languageCode</span> ?? <span class="type">Locale</span>.<span class="property">current</span>.<span class="property">languageCode</span>
+        <span class="keyword">let</span> localizedString = <span class="call">localizedString</span>(languageCode, key)
+
+        <span class="keyword">return</span> <span class="type">Text</span>(localizedString)
+    }
+}
+</code></pre><p><code>LocalizedText</code> view is used to get the <code>locale</code> from the <code>environment</code> as it is only available from the <code>View</code> context. This was by passing the <code>localizedString</code> closure, which gets all the information needed to resolve the localized string which is the <code>key</code> and <code>languageCode</code>.</p><p>Example of use could look like this:</p><pre><code><span class="keyword">extension</span> <span class="type">L18n</span> {
+    <span class="keyword">static func</span> localizedString(<span class="keyword">_</span> key: <span class="type">String</span>, languageCode: <span class="type">String</span>) -&gt; <span class="type">String</span> {
+        <span class="type">NSLocalizedString</span>(
+            key,
+            tableName: <span class="string">""</span>,
+            bundle: <span class="call">resolveBundle</span>(for : languageCode),
+            value: <span class="string">"**</span>\(key)<span class="string">**"</span>,
+            comment: <span class="string">""</span>
+        )
+    }
+
+    <span class="keyword">static func</span> localizedText(<span class="keyword">_</span> key: <span class="type">String</span>) -&gt; <span class="keyword">some</span> <span class="type">View</span> {
+        <span class="type">LocalizedText</span>(key: key, localizedString: { languageCode, key <span class="keyword">in</span>
+            <span class="call">localizedString</span>(key, languageCode: languageCode)
+        })
+    }
+}
+</code></pre><pre><code><span class="keyword">struct</span> SomeView: <span class="type">View</span> {
+    <span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">View</span> {
+        <span class="type">L18n</span>.<span class="call">localizedText</span>(<span class="string">"Hello"</span>)
+    }
+}
+
+<span class="keyword">struct</span> SomeView_Preview: <span class="type">PreviewProvider</span> {
+    <span class="keyword">static var</span> previews: <span class="keyword">some</span> <span class="type">View</span> {
+        <span class="type">SomeView</span>()
+            .<span class="call">environment</span>(\.<span class="property">locale</span>, <span class="type">Locale</span>(identifier: <span class="string">"pl"</span>))
+    }
+}
+</code></pre><p>This way we keep the best of both worlds. Especially do not lose the ability of SwiftUI <a href="https://developer.apple.com/documentation/swiftui/environmentvalues"><code>EnvironmentValues</code></a> and still provide a custom implementation for the localized strings handling. We can keep <code>*.lproj</code> and <code>*.strings</code> files in a separate framework, and provide a custom implementation of the localized strings by e.g. having a complicated fallback translations business logic in case the key is missing for the asked language.</p></div><span>Tagged with: </span><ul class="tag-list"></ul></article></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>
