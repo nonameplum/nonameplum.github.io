@@ -1,8 +1,8 @@
 ---
 date: 2022-04-12 13:29
 description: SwiftUI custom localization strings handling.
-tags: 
-tagColors: 
+tags: swift,SwiftUI
+tagColors: swift=1d76db,SwiftUI=F6DA24
 ---
 # How to handle localized strings from separate bundle or framework in SwiftUI
 
