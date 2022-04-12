@@ -4,18 +4,18 @@ description: SwiftUI custom localization strings handling.
 tags: swift,SwiftUI
 tagColors: swift=1d76db,SwiftUI=F6DA24
 ---
-# How to handle localized strings from separate bundle or framework in SwiftUI
+# How to handle localized strings from a separate bundle or framework in SwiftUI
 
-SwiftUI provides a very handy `LocalizedStringKey` that can be used to e.g. initialized the `Text` view and others.
-It works differently from UIKit in that regard that if the localized strings leave in some other bundle than the main one from where by default SwiftUI tries to get the localized strings you have to pass that information to the `Text` [constructor](https://developer.apple.com/documentation/swiftui/text/init(_:tablename:bundle:comment:)), in contrast to [`NSLocalizedString`](https://developer.apple.com/documentation/foundation/1418095-nslocalizedstring).
+SwiftUI provides [`LocalizedStringKey`](https://developer.apple.com/documentation/swiftui/localizedstringkey) that can be used to initialize several `View` types, such as `Text`, `Toggle`, and others.
+It works differently from UIKit in that regard, as if the localized strings leave in some other bundle than the main one from where by default SwiftUI tries to get the values, you have to pass that information to the `Text` [constructor](https://developer.apple.com/documentation/swiftui/text/init(_:tablename:bundle:comment:)) (not to `LocalizedStringKey`), in contrast to [`NSLocalizedString`](https://developer.apple.com/documentation/foundation/1418095-nslocalizedstring).
 
-It is connected to the fact how SwiftUI internally handles the possibility to easily override the locale used by the view using
+It is connected to the fact that SwiftUI internally handles the possibility to easily override the locale used by the view.
 
 ```swift
 view.environment(\.locale, .init(identifier: "pl"))
 ```
 
-It is very handy, especially in the case of the SwiftUI Previews, so you can very easily see how the view will behave in all supported languages at once.
+It is very handy, especially in the case of the SwiftUI Previews.
 
 ```swift
 ForEach(localizations, id: \.identifier) { locale in
@@ -25,9 +25,9 @@ ForEach(localizations, id: \.identifier) { locale in
 }
 ```
 
-The problem is when you would like to use `NSLocalizedString` to get the localized strings, or you have a custom implementation for the localized strings handling. Then most probably you will lose the ability to set the locale by `.environment(\.locale, locale)` on the views because it won't be respected. As the environment value is available in the `View` context. `Locale.current` stays the same across the app anyway.
+The problem is when you would like to use `NSLocalizedString`, or you have a custom implementation for the localized strings handling. Then most probably you will lose the ability to set the locale by `.environment(\.locale, locale)` on the views because it won't be respected. As the environment value is available in the `View` context and `Locale.current` stays the same across the app. There is no way to get the locale set for the given view and its child views outside of the `body`.
 
-To overcome that issue I came up with a solution that allows to still be able to override the locale environment and provide a custom implementation of the localized strings.
+To overcome that issue I came up with a solution that allows to override of the locale environment and provide a custom implementation of the localized strings.
 
 ```swift
 struct LocalizedText: View {
@@ -45,7 +45,7 @@ struct LocalizedText: View {
 ``` 
 
 `LocalizedText` view is used to get the `locale` from the `environment` as it is only available from the `View` context.
-This was by passing the `localizedString` closure, which gets all the information needed to resolve the localized string which is the `key` and `languageCode`. 
+Using `localizedString` closure, which gets all the information needed to resolve the localized string which is the `key` and `languageCode` (if needed the whole `Locale` object could be passed instead). 
 
 Example of use could look like this:
 
