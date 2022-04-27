@@ -53,3 +53,4 @@ class Test: XCTestCase {
         XCTAssertEqual(Locale.preferredLanguages, ["fr", "de", "pl"])
     }
 }
+```
