@@ -40,7 +40,7 @@ But the problem with `UIResponder.next` is that it won't traverse all of the con
 
 I thought, that why not reverse engineer the original `_printHierarchy` method, to check all of the quirks of its internal implementation and understand how Apple engineers traverse the view controllers hierarchy top-down.
 It turned out to be quite straightforward after using [Hopper Disassembler app](https://www.hopperapp.com/).
-The `_printHierachy` core method is actually implemented in `_appendDescription`. On UIKit 15.0 with disassembled `UIKitCore` using _x86_64_ which is a bit more readable than _ARM64_.
+The `_printHierachy` core method is actually implemented in `_appendDescription`. On UIKit 15.0 with disassembled `UIKitCore` using x86_64 which is a bit more readable than ARM64.
 
 ```assembly
 function _appendDescription {
@@ -258,7 +258,7 @@ extension UIViewController {
 }
 ```
 
-I had to reimplement the `isRootViewController` and `childModalViewController` that is used in the original implementation and it is not avaiable in the public methods of UIKit API. `appendDescription` goes recursively trought child and child modal view controllers. 
+I intentionally left the `while/repeat` loops to make the comparison with disassembled method easier. I had to reimplement the `isRootViewController` and `childModalViewController` that is used in the original implementation and it is not avaiable in the public methods of UIKit API. `appendDescription` goes recursively trought child and child modal view controllers. 
 What I learned from this, is that Apple engenieers smartly do not check for the specific `UIViewController` subclasses to verify if there are sub view controllers like you can do with `UINavigationController.viewControllers`. They just check if there are child/modal view controllers, and recursively visit all of them.
 The ouput of my reimplemented _Swift_ `printHierarchy` looks the same beside slight differences of the `UIViewControllers` descriptions, as again there is custom implementation used internally like `_descriptionForPrintingHierarchyIncludingInsets`.
 
