@@ -1,4 +1,256 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Łukasz Śliwiński</title><description>Software Developer Blog</description><link>https://nonameplum.github.io</link><language>en</language><lastBuildDate>Wed, 27 Apr 2022 17:59:41 +0000</lastBuildDate><pubDate>Wed, 27 Apr 2022 17:59:41 +0000</pubDate><ttl>250</ttl><atom:link href="https://nonameplum.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://nonameplum.github.io/posts/Unit%20tests%20with%20several%20localizations</guid><title>How to make unit tests with several localizations</title><description>Unit tests with several localizations</description><link>https://nonameplum.github.io/posts/Unit%20tests%20with%20several%20localizations</link><pubDate>Wed, 27 Apr 2022 17:38:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to make unit tests with several localizations</h1><p>Since Xcode 11 there is a possibility to configure different locales for unit tests by using <a href="https://developer.apple.com/videos/play/wwdc2019/413/">Test Plans</a>. It is fine, but a little bit cumbersome as requires the Xcode-specific configuration. Another way of making it work is the old-school method swizzling. It is quite simple to do and does its job with quite nice flexibility. It doesn't require any Xcode setup, works well with SPM too. The idea could be also extended to customize not only the <a href="https://developer.apple.com/documentation/foundation/locale"><code>Locale</code></a>, but also e.g. <a href="https://developer.apple.com/documentation/foundation/locale/2293155-preferredlanguages"><code>preferredlanguages</code></a>. The key point is that we can do it by exchanging the methods on <code>NSLocale</code> instead of <code>Locale</code> which still is used as a wrapper over <a href="https://github.com/apple/swift-corelibs-foundation/blob/bfead15ba7a547a8e2ea79dfd8be97de1153245d/Sources/Foundation/Locale.swift">the objective-c predecessor</a>.</p><p>We can use <code>method_setImplementation</code> and <a href="https://apple-swift.readthedocs.io/en/latest/SIL.html"><code>@convention(block)</code></a> (<a href="https://docs.swift.org/swift-book/ReferenceManual/Attributes.html">swift documentation</a>) in this case, which makes it a little bit more ergonomic than defining the <code>@objc</code> method that would solve the purpose of the exchanged method.</p><pre><code><span class="keyword">extension</span> <span class="type">XCTestCase</span> {
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Łukasz Śliwiński</title><description>Software Developer Blog</description><link>https://nonameplum.github.io</link><language>en</language><lastBuildDate>Tue, 3 May 2022 08:37:20 +0000</lastBuildDate><pubDate>Tue, 3 May 2022 08:37:20 +0000</pubDate><ttl>250</ttl><atom:link href="https://nonameplum.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://nonameplum.github.io/posts/Reverse%20engineered%20%60_printHierarchy%60</guid><title>How to reverse engineer _printHierarchy</title><description>Reverse engineered `_printHierarchy`</description><link>https://nonameplum.github.io/posts/Reverse%20engineered%20%60_printHierarchy%60</link><pubDate>Tue, 3 May 2022 08:34:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to reverse engineer <code>_printHierarchy</code></h1><p>I wanted to traverse the view controllers hierarchy the same way as the private method that is available on UIKit -<code>UIViewController._printHierarchy</code>.</p><p>You can run it from lldb:</p><pre><code>exp -l objc -o -- [<span class="type">UIApplication</span>.<span class="property">sharedApplication</span>.<span class="property">keyWindow</span>.<span class="property">rootViewController</span> _printHierarchy]
+</code></pre><p>or using a class method</p><pre><code>exp -l objc -o -- [<span class="type">UIViewController</span> _printHierarchy]
+</code></pre><p>and it should return something like:</p><pre><code>&lt;<span class="type">UITabBarController</span> 0x12c01d200&gt;, state: appeared, view: &lt;<span class="type">UILayoutContainerView</span> 0x129e07b40&gt;
+   | &lt;<span class="type">UINavigationController</span> 0x12a808200&gt;, state: appeared, view: &lt;<span class="type">UILayoutContainerView</span> 0x129b10880&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b04620&gt;, state: disappeared, view: (view not loaded)
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b049c0&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129b27620&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129f06550&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129f0b7c0&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b24540&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129b2b750&gt;
+   | &lt;<span class="type">UINavigationController</span> 0x12b80a000&gt;, state: disappeared, view: &lt;<span class="type">UILayoutContainerView</span> 0x12d0052c0&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129c07220&gt;, state: disappeared, view: (view not loaded)
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129c075c0&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129e0c730&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x12d204900&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129e11550&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x12d204ca0&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129b16200&gt; not <span class="keyword">in</span> the window
+   + &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x12d2065e0&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129b26a90&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span> 0x12d205aa0&gt;
+   |    + &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b4b130&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129b4b4d0&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span> 0x129b4b7f0&gt;
+   |    |    + &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129e2ada0&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129e25950&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span> 0x129e27ec0&gt;
+</code></pre><p>I have found a few existing solutions that for example use the <code>UIResponder</code> chain to traverse the hierarchy like <a href="https://dmytro-anokhin.medium.com/exploring-view-hierarchy-332ea63262e9">this one</a>. But the problem with <code>UIResponder.next</code> is that it won't traverse all of the controllers if there is a branch of more than one <code>UIViewController</code> stack like you might have with e.g. <code>UITabViewController</code> and modally presented view controllers. <code>UIResponder.next</code> traverses bottom-up the view hierarchy but only from the specific leaf.</p><p>I thought, that why not reverse engineer the original <code>_printHierarchy</code> method, to check all of the quirks of its internal implementation and understand how Apple engineers traverse the view controllers hierarchy top-down. It turned out to be quite straightforward after using <a href="https://www.hopperapp.com/">Hopper Disassembler app</a>. The <code>_printHierachy</code> core method is actually implemented in <code>_appendDescription</code>. On UIKit 15.0 with disassembled <code>UIKitCore</code> using <em>x86</em>64<em> which is a bit more readable than </em>ARM64_.</p><pre><code>function <span class="call">_appendDescription</span> {
+    stack[-<span class="number">200</span>] = rcx;
+    r14 = rdx;
+    r12 = [rdi retain];
+    rbx = [rsi retain];
+    <span class="keyword">if</span> ([rbx length] != 0x0) {
+            [rbx appendString:<span class="string">@"\n"];</span>
+    }
+    stack[-<span class="number">208</span>] = rbx;
+    rax = [r12 _parentViewController];
+    rax = [rax retain];
+    stack[-<span class="number">188</span>] = r14 &amp; 0xff;
+    stack[-<span class="number">216</span>] = r12;
+    <span class="keyword">if</span> (rax != 0x0) {
+            [rax release];
+            r15 = stack[-<span class="number">208</span>];
+            <span class="keyword">if</span> (stack[-<span class="number">200</span>] != 0x0) {
+                    r12 = <span class="call">sign_extend_64</span>(stack[-<span class="number">200</span>]);
+                    rbx = 0x1;
+                    <span class="keyword">do</span> {
+                            [r15 appendString:<span class="string">@"   | "];</span>
+                            rbx = rbx + 0x1;
+                    } <span class="keyword">while</span> (rbx &lt;= r12);
+            }
+            r13 = stack[-<span class="number">216</span>];
+            rax = -[<span class="type">UIViewController</span> _descriptionForPrintingHierarchyIncludingInsets:](r13, stack[-<span class="number">188</span>]);
+            rax = [rax retain];
+            rbx = rax;
+            [r15 appendString:rax];
+    }
+    <span class="keyword">else</span> {
+            <span class="keyword">if</span> ([r12 _isRootViewController] != 0x0) {
+                    r15 = stack[-<span class="number">208</span>];
+                    <span class="keyword">if</span> (stack[-<span class="number">200</span>] != 0x0) {
+                            r12 = <span class="call">sign_extend_64</span>(stack[-<span class="number">200</span>]);
+                            rbx = 0x1;
+                            <span class="keyword">do</span> {
+                                    [r15 appendString:<span class="string">@"   | "];</span>
+                                    rbx = rbx + 0x1;
+                            } <span class="keyword">while</span> (rbx &lt;= r12);
+                    }
+                    r13 = stack[-<span class="number">216</span>];
+                    rax = -[<span class="type">UIViewController</span> _descriptionForPrintingHierarchyIncludingInsets:](r13, stack[-<span class="number">188</span>]);
+                    rax = [rax retain];
+                    rbx = rax;
+                    [r15 appendString:rax];
+            }
+            <span class="keyword">else</span> {
+                    r12 = stack[-<span class="number">208</span>];
+                    <span class="keyword">if</span> (stack[-<span class="number">200</span>] &gt;= 0x2) {
+                            rbx = <span class="call">sign_extend_64</span>(stack[-<span class="number">200</span>]) - 0x1;
+                            <span class="keyword">do</span> {
+                                    [r12 appendString:<span class="string">@"   | "];</span>
+                                    rbx = rbx - 0x1;
+                            } <span class="keyword">while</span> (rbx != 0x0);
+                    }
+                    [r12 appendString:<span class="string">@"   + "];</span>
+                    r15 = [-[<span class="type">UIViewController</span> _descriptionForPrintingHierarchyIncludingInsets:](stack[-<span class="number">216</span>], stack[-<span class="number">188</span>]) retain];
+                    rax = [stack[-<span class="number">216</span>] presentingViewController];
+                    rax = [rax retain];
+                    stack[-<span class="number">248</span>] = rax;
+                    rax = [rax _presentationController];
+                    rax = [rax retain];
+                    stack[-<span class="number">240</span>] = rax;
+                    rax = [rax _descriptionForPrintingViewControllerHierarchy];
+                    rax = [rax retain];
+                    stack[-<span class="number">224</span>] = rax;
+                    rax = [<span class="type">NSMutableString</span> stringWithFormat:<span class="string">@"%@, presented with: %@", r15, rax];</span>
+                    rax = [rax retain];
+                    r13 = stack[-<span class="number">216</span>];
+                    [r12 appendString:rax];
+                    rbx = r15;
+                    [rax release];
+                    [stack[-<span class="number">224</span>] release];
+                    [stack[-<span class="number">240</span>] release];
+                    [stack[-<span class="number">248</span>] release];
+            }
+    }
+    [rbx release];
+    *(int128_t *)(&amp;stack[-<span class="number">312</span>] + 0x30) = <span class="call">intrinsic_movaps</span>(*(int128_t *)(&amp;stack[-<span class="number">312</span>] + 0x30), 0x0);
+    *(int128_t *)(&amp;stack[-<span class="number">312</span>] + 0x20) = <span class="call">intrinsic_movaps</span>(*(int128_t *)(&amp;stack[-<span class="number">312</span>] + 0x20), 0x0);
+    *(int128_t *)(&amp;stack[-<span class="number">312</span>] + 0x10) = <span class="call">intrinsic_movaps</span>(*(int128_t *)(&amp;stack[-<span class="number">312</span>] + 0x10), 0x0);
+    *(int128_t *)&amp;stack[-<span class="number">312</span>] = <span class="call">intrinsic_movaps</span>(*(int128_t *)&amp;stack[-<span class="number">312</span>], 0x0);
+    rax = [r13 childViewControllers];
+    rax = [rax retain];
+    rbx = rax;
+    rcx = &amp;stack[-<span class="number">184</span>];
+    rdx = &amp;stack[-<span class="number">312</span>];
+    rax = [rax countByEnumeratingWithState:rdx objects:rcx count:0x10];
+    <span class="keyword">if</span> (rax != 0x0) {
+            r13 = rax;
+            r12 = **(&amp;stack[-<span class="number">312</span>] + 0x10);
+            r15 = stack[-<span class="number">200</span>] + 0x1;
+            <span class="keyword">do</span> {
+                    r14 = 0x0;
+                    <span class="keyword">do</span> {
+                            <span class="keyword">if</span> (*stack[-<span class="number">296</span>] != r12) {
+                                    <span class="call">objc_enumerationMutation</span>(rbx);
+                            }
+                            <span class="call">_appendDescription</span>(*(stack[-<span class="number">304</span>] + r14 * 0x8), stack[-<span class="number">208</span>], stack[-<span class="number">188</span>], r15, 0x10);
+                            r14 = r14 + 0x1;
+                    } <span class="keyword">while</span> (r13 != r14);
+                    rdx = &amp;stack[-<span class="number">312</span>];
+                    rcx = &amp;stack[-<span class="number">184</span>];
+                    rax = [rbx countByEnumeratingWithState:rdx objects:rcx count:0x10];
+                    r13 = rax;
+            } <span class="keyword">while</span> (rax != 0x0);
+    }
+    [rbx release];
+    r14 = stack[-<span class="number">216</span>];
+    rsi = <span class="keyword">@selector</span>(childModalViewController);
+    rax = (*_objc_msgSend)(r14, rsi);
+    rax = [rax retain];
+    [rax release];
+    rbx = stack[-<span class="number">208</span>];
+    <span class="keyword">if</span> (rax != 0x0) {
+            rax = [r14 childModalViewController];
+            rax = [rax retain];
+            rcx = stack[-<span class="number">200</span>] + 0x1;
+            rsi = rbx;
+            rdx = stack[-<span class="number">188</span>];
+            <span class="call">_appendDescription</span>(rax, rsi, rdx, rcx);
+            [rax release];
+    }
+    stack[-<span class="number">56</span>] = **___stack_chk_guard;
+    [rbx release];
+    [r14 release];
+    rax = *___stack_chk_guard;
+    rax = *rax;
+    <span class="keyword">if</span> (rax != stack[-<span class="number">56</span>]) {
+            rax = <span class="call">__stack_chk_fail</span>();
+    }
+    <span class="keyword">return</span> rax;
+}
+</code></pre><p>There are few <code>if</code> statements that split the code, but they are mostly used to properly append to the print indentation, like <code>"   | "</code> and <code>"   + "</code>. Overall if you forget about the lines generated by the assembly code (e.g. registry assignments) and <em>ARC</em> (e.g. <code>[rax retain]</code>, <code>[r14 release]</code>) the code is quite short and simple. Inside <code>if</code> statements blocks you can find the <code>while/repeat</code> loops that add the indentation required depending on the view hierarchy tree.</p><p>I transferred the code into <em>Swift</em> and this is what I got:</p><pre><code><span class="keyword">extension</span> <span class="type">UIViewController</span> {
+    <span class="keyword">public func</span> printHierarchy() {
+        <span class="keyword">var</span> prints: [<span class="type">String</span>] = []
+        <span class="keyword">self</span>.<span class="call">appendDescription</span>(output: &amp;prints, deep: <span class="number">0</span>)
+
+        <span class="keyword">let</span> printString = prints.<span class="call">reduce</span>(<span class="string">""</span>) { partialResult, elem <span class="keyword">in
+            return</span> partialResult.<span class="call">appending</span>(elem)
+        }
+
+        <span class="call">print</span>(printString)
+    }
+
+    <span class="keyword">private func</span> appendDescription(output: <span class="keyword">inout</span> [<span class="type">String</span>], deep: <span class="type">Int</span>) {
+        <span class="keyword">if</span> !output.<span class="property">isEmpty</span> {
+            output.<span class="call">append</span>(<span class="string">"\n"</span>)
+        }
+
+        <span class="keyword">if self</span>.<span class="property">parent</span> != <span class="keyword">nil</span> {
+            <span class="keyword">var</span> i = <span class="number">0</span>
+            <span class="keyword">while</span> i &lt; <span class="call">deep</span> {
+                output.<span class="call">append</span>(<span class="string">"   | "</span>)
+                i += <span class="number">1</span>
+            }
+            output.<span class="call">append</span>(<span class="keyword">self</span>.<span class="property">description</span>)
+        } <span class="keyword">else</span> {
+            <span class="keyword">if self</span>.<span class="property">isRootViewController</span> {
+                <span class="keyword">var</span> i = <span class="number">1</span>
+                <span class="keyword">while</span> i &lt; <span class="call">deep</span> {
+                    output.<span class="call">append</span>(<span class="string">"   | "</span>)
+                    output.<span class="call">append</span>(<span class="keyword">self</span>.<span class="property">description</span>)
+                    i += <span class="number">1</span>
+                }
+                output.<span class="call">append</span>(<span class="keyword">self</span>.<span class="property">description</span>)
+            } <span class="keyword">else</span> {
+                <span class="keyword">if</span> deep &gt;= <span class="number">2</span> {
+                    <span class="keyword">var</span> i = deep - <span class="number">1</span>
+                    <span class="keyword">repeat</span> {
+                        output.<span class="call">append</span>(<span class="string">"   | "</span>)
+                        i -= <span class="number">1</span>
+                    } <span class="keyword">while</span> i != <span class="number">0</span>
+                }
+                output.<span class="call">append</span>(<span class="string">"   + "</span>)
+                output.<span class="call">append</span>(<span class="keyword">self</span>.<span class="property">description</span>)
+                output.<span class="call">append</span>(<span class="string">", presented with:</span> \(<span class="keyword">self</span>.<span class="property">presentationController</span>?.<span class="property">description</span> ?? "N/<span class="type">A"</span>)<span class="string">"</span>)
+            }
+        }
+
+        <span class="keyword">if</span> !<span class="keyword">self</span>.<span class="property">children</span>.<span class="property">isEmpty</span> {
+            <span class="keyword">var</span> i = <span class="number">0</span>
+            <span class="keyword">while</span> i &lt; <span class="keyword">self</span>.<span class="property">children</span>.<span class="call">count</span> {
+                <span class="keyword">self</span>.<span class="property">children</span>[i].<span class="call">appendDescription</span>(output: &amp;output, deep: deep + <span class="number">1</span>)
+                i += <span class="number">1</span>
+            }
+        }
+
+        <span class="keyword">if let</span> childModalVC = <span class="keyword">self</span>.<span class="property">childModalViewController</span> {
+            childModalVC.<span class="call">appendDescription</span>(output: &amp;output, deep: deep + <span class="number">1</span>)
+        }
+    }
+}
+
+<span class="keyword">extension</span> <span class="type">UIViewController</span> {
+    <span class="keyword">var</span> isRootViewController: <span class="type">Bool</span> {
+        <span class="type">UIApplication</span>.<span class="property">shared</span>.<span class="property">windows</span>.<span class="call">compactMap</span>(\.<span class="property">rootViewController</span>).<span class="call">contains</span>(<span class="keyword">self</span>)
+    }
+
+    <span class="keyword">var</span> childModalViewController: <span class="type">UIViewController</span>? {
+        <span class="keyword">if self</span>.<span class="property">presentedViewController</span>?.<span class="property">presentingViewController</span> == <span class="keyword">self</span> {
+            <span class="keyword">return self</span>.<span class="property">presentedViewController</span>
+        } <span class="keyword">else</span> {
+            <span class="keyword">return nil</span>
+        }
+    }
+}
+</code></pre><p>I had to reimplement the <code>isRootViewController</code> and <code>childModalViewController</code> that is used in the original implementation and it is not avaiable in the public methods of UIKit API. <code>appendDescription</code> goes recursively trought child and child modal view controllers. What I learned from this, is that Apple engenieers smartly do not check for the specific <code>UIViewController</code> subclasses to verify if there are sub view controllers like you can do with <code>UINavigationController.viewControllers</code>. They just check if there are child/modal view controllers, and recursively visit all of them. The ouput of my reimplemented <em>Swift</em> <code>printHierarchy</code> looks the same beside slight differences of the <code>UIViewControllers</code> descriptions, as again there is custom implementation used internally like <code>_descriptionForPrintingHierarchyIncludingInsets</code>.</p><h3>Reimplemented</h3><pre><code>&lt;<span class="type">UITabBarController</span>: 0x12c01d200&gt;
+   | &lt;<span class="type">UINavigationController</span>: 0x12a808200&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129b04620&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129b049c0&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129f06550&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129b24540&gt;
+   | &lt;<span class="type">UINavigationController</span>: 0x12b80a000&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129c07220&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129c075c0&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x12d204900&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x12d204ca0&gt;
+   + &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x12d2065e0&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span>: 0x12d205aa0&gt;
+   |    + &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129b4b130&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span>: 0x129b4b7f0&gt;
+   |    |    + &lt;<span class="type">App</span>.<span class="type">ViewController</span>: 0x129e2ada0&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span>: 0x129e27ec0&gt;
+</code></pre><h3>Original</h3><pre><code>&lt;<span class="type">UITabBarController</span> 0x12c01d200&gt;, state: appeared, view: &lt;<span class="type">UILayoutContainerView</span> 0x129e07b40&gt;
+   | &lt;<span class="type">UINavigationController</span> 0x12a808200&gt;, state: appeared, view: &lt;<span class="type">UILayoutContainerView</span> 0x129b10880&gt;
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b04620&gt;, state: disappeared, view: (view not loaded)
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b049c0&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129b27620&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129f06550&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129f0b7c0&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b24540&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129b2b750&gt;
+   | &lt;<span class="type">UINavigationController</span> 0x12b80a000&gt;, state: disappeared, view: &lt;<span class="type">UILayoutContainerView</span> 0x12d0052c0&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129c07220&gt;, state: disappeared, view: (view not loaded)
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129c075c0&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129e0c730&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x12d204900&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129e11550&gt; not <span class="keyword">in</span> the window
+   |    | &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x12d204ca0&gt;, state: disappeared, view: &lt;<span class="type">UIView</span> 0x129b16200&gt; not <span class="keyword">in</span> the window
+   + &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x12d2065e0&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129b26a90&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span> 0x12d205aa0&gt;
+   |    + &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129b4b130&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129b4b4d0&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span> 0x129b4b7f0&gt;
+   |    |    + &lt;<span class="type">App</span>.<span class="type">ViewController</span> 0x129e2ada0&gt;, state: appeared, view: &lt;<span class="type">UIView</span> 0x129e25950&gt;, presented with: &lt;<span class="type">_UIPageSheetPresentationController</span> 0x129e27ec0&gt;
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://nonameplum.github.io/posts/Unit%20tests%20with%20several%20localizations</guid><title>How to make unit tests with several localizations</title><description>Unit tests with several localizations</description><link>https://nonameplum.github.io/posts/Unit%20tests%20with%20several%20localizations</link><pubDate>Wed, 27 Apr 2022 17:38:00 +0000</pubDate><content:encoded><![CDATA[<h1>How to make unit tests with several localizations</h1><p>Since Xcode 11 there is a possibility to configure different locales for unit tests by using <a href="https://developer.apple.com/videos/play/wwdc2019/413/">Test Plans</a>. It is fine, but a little bit cumbersome as requires the Xcode-specific configuration. Another way of making it work is the old-school method swizzling. It is quite simple to do and does its job with quite nice flexibility. It doesn't require any Xcode setup, works well with SPM too. The idea could be also extended to customize not only the <a href="https://developer.apple.com/documentation/foundation/locale"><code>Locale</code></a>, but also e.g. <a href="https://developer.apple.com/documentation/foundation/locale/2293155-preferredlanguages"><code>preferredlanguages</code></a>. The key point is that we can do it by exchanging the methods on <code>NSLocale</code> instead of <code>Locale</code> which still is used as a wrapper over <a href="https://github.com/apple/swift-corelibs-foundation/blob/bfead15ba7a547a8e2ea79dfd8be97de1153245d/Sources/Foundation/Locale.swift">the objective-c predecessor</a>.</p><p>We can use <code>method_setImplementation</code> and <a href="https://apple-swift.readthedocs.io/en/latest/SIL.html"><code>@convention(block)</code></a> (<a href="https://docs.swift.org/swift-book/ReferenceManual/Attributes.html">swift documentation</a>) in this case, which makes it a little bit more ergonomic than defining the <code>@objc</code> method that would solve the purpose of the exchanged method.</p><pre><code><span class="keyword">extension</span> <span class="type">XCTestCase</span> {
    <span class="keyword">func</span> setLocale(identifier: <span class="type">String</span>, preferredLanguages: [<span class="type">String</span>]) {
         <span class="keyword">let</span> currentlLocale: <span class="keyword">@convention</span>(block) (<span class="type">AnyObject</span>)
             -&gt; <span class="type">AnyObject</span> = { (_: <span class="type">AnyObject</span>!) -&gt; <span class="type">NSLocale</span> <span class="keyword">in
