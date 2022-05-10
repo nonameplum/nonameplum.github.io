@@ -35,11 +35,11 @@ Because in my case the ESP8266 will be placed under the gearmotor cover I also c
 
 <img width="1210" alt="Schematics" src="https://user-images.githubusercontent.com/1753816/167712255-18ce9ca8-c7fc-4ff4-854e-1698fc67e447.png">
 
-<img width="400" alt="Box photo" src="https://user-images.githubusercontent.com/1753816/167716457-1a331d19-a9e3-4778-b376-f07a0c668c84.jpg"> 
+<img width="400" alt="Box photo" src="https://user-images.githubusercontent.com/1753816/167716457-1a331d19-a9e3-4778-b376-f07a0c668c84.jpg">
 
-https://user-images.githubusercontent.com/1753816/167717556-d19b13c4-e04f-4dce-9d7e-e305aab08721.mov
+<a href="https://user-images.githubusercontent.com/1753816/167717556-d19b13c4-e04f-4dce-9d7e-e305aab08721.mov" title="Gate video"><img src="[{image-url}](https://user-images.githubusercontent.com/1753816/167720846-0539f0ef-aef8-4343-a65c-c7a2417094a5.png)" alt="Gate video" /></a>
 
-https://user-images.githubusercontent.com/1753816/167718341-da9fd99d-f3ac-45af-8bbd-1afa5f4a22e1.mov
+<a href="https://user-images.githubusercontent.com/1753816/167718341-da9fd99d-f3ac-45af-8bbd-1afa5f4a22e1.mov" title="Gate video"><img src="https://user-images.githubusercontent.com/1753816/167720855-7283fdf0-98c1-4c74-9182-c48bfc171f80.png" alt="Gate video" /></a>
 
 # Programming
 
