@@ -27,13 +27,9 @@ I just changed the resistors from `100k` to `2k`. Instead of using 1 resistor th
 
 Having the voltage detector, I had to connect it between the gearmotor's terminals for signaling devices and the microcontroller's GPIO. I have the CAME BXV series SDNX gearmotor. Using the manual I just had to find where are the connectors for the signaling devices. In my case, it was very easy to access, just unscrue one scrue to take off the cover, and then already on the board ⑫ the terminals ⑱ are visible.
 
-<img width="375" alt="Screenshot 2022-05-09 at 09 07 47" src="https://user-images.githubusercontent.com/1753816/167358028-504e40f2-dcf9-4bcc-b99e-48a85fd82082.png"><img width="375" alt="Screenshot 2022-05-09 at 09 05 48" src="https://user-images.githubusercontent.com/1753816/167358034-909556f9-6da9-4dac-a67d-691a93b58ca2.png">
-
 It means that I needed to connect the output terminals with the voltage detector circuit and then its output to the microcontroller's GPIO.
 
 Because in my case the ESP8266 will be placed under the gearmotor cover I also could easily add another feature. Using the relay controller by the microcontroller I can short circuit for a short time that is connected to the command terminals ⓸. I already used those to be able open/close my gate from home, by using the wall-mounted momentary-action switch.
-
-<img width="1210" alt="Schematics" src="https://user-images.githubusercontent.com/1753816/167712255-18ce9ca8-c7fc-4ff4-854e-1698fc67e447.png">
 
 ### Programming
 
