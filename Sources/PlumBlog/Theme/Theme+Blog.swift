@@ -178,13 +178,22 @@ extension Node where Context == HTML.BodyContext {
                     .a(.class("site-logo"), .href("/"), .text("📱")),
                     .a(.class("site-name"), .href("/"), .text("Łukasz Śliwiński")),
                     .a(.class("site-subname"), .href("/"), .text("Software Developer Blog"))
-                ),
+                ),                
                 .div(
-                    .class("avatar-wrapper"),
+                    .class("avatar-wrapper"),    
+                    .a(
+                        .class("fa-brands fa-twitter"),
+                        .href("https://twitter.com/sliwinskilukas")
+                    ),
+                    .a(
+                        .class("fa-brands fa-linkedin"),
+                        .href("https://www.linkedin.com/in/łukasz-śliwiński-01b48a12a")
+                    ),
                     .unwrap(
                         context.site.avatarURL,
                         {
                             .a(
+                                .class("avatar-link"),
                                 .href("https://github.com/nonameplum"),
                                 .img(
                                     .src($0),
@@ -323,6 +332,19 @@ extension Node where Context == HTML.DocumentContext {
         }
 
         return .head(
+            .raw(
+            """
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-J4P81SMT9Y"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-J4P81SMT9Y');
+            </script>
+            """
+            ),
             .encoding(.utf8),
             .siteName(site.name),
             .url(site.url(for: location)),
@@ -349,6 +371,10 @@ extension Node where Context == HTML.DocumentContext {
             .link(
                 .rel(.stylesheet),
                 .href(googleApisFontsURL())
+            ),
+            .link(
+                .rel(.stylesheet),
+                .href(URL(string: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css")!)
             ),
             .viewport(.accordingToDevice),
             .unwrap(site.favicon, { .favicon($0) }),
