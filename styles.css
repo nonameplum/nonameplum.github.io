@@ -69,10 +69,6 @@ header .wrapper {
     grid-template-columns: auto 1fr;
 }
 
-header a {
-    text-decoration: none;
-}
-
 header .title {
     grid-column: 1;
     text-align: left;
@@ -112,12 +108,36 @@ header .avatar-wrapper {
     grid-column: 3;
     align-self: center;
     justify-self: right;
+    display: grid;
+    align-items: center;
+    align-content: center;
+    grid-gap: 10px;
 }
 
 header .avatar {
     border-radius: 50%!important;
     height: 40px;
     border: 2px solid var(--accent-green);
+}
+
+header .fa-brands {
+    font-size: 20px;
+}
+
+header .fa-twitter {
+    grid-column: 1;
+}
+
+header .fa-linkedin {
+    grid-column: 2;
+}
+
+header .avatar-link {
+    grid-column: 3;
+}
+
+header a {
+    text-decoration: none;
 }
 
 nav {
