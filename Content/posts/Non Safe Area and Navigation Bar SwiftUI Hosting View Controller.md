@@ -4,7 +4,7 @@ description: Non Safe Area and Navigation Bar SwiftUI Hosting View Controller
 tags: SwiftUI
 tagColors: SwiftUI=F6DA24
 ---
-How to hide navigation bar and fix the safe are issue while using UIHostingViewController
+# How to hide navigation bar and fix the safe are issue while using UIHostingViewController since SwiftUI iOS 13.0
 
 I created a `UIHostingViewController` that works for me since iOS 13.0, and solves the `NavigationBar` visibility issues and safe area in SwiftUI.
 
