@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en"><head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J4P81SMT9Y"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-J4P81SMT9Y');
+</script><meta charset="UTF-8"/><meta name="og:site_name" content="Łukasz Śliwiński"/><link rel="canonical" href="https://nonameplum.github.io/posts/Non%20Safe%20Area%20and%20Navigation%20Bar%20SwiftUI%20Hosting%20View%20Controller"/><meta name="twitter:url" content="https://nonameplum.github.io/posts/Non%20Safe%20Area%20and%20Navigation%20Bar%20SwiftUI%20Hosting%20View%20Controller"/><meta name="og:url" content="https://nonameplum.github.io/posts/Non%20Safe%20Area%20and%20Navigation%20Bar%20SwiftUI%20Hosting%20View%20Controller"/><title>Non Safe Area and Navigation Bar SwiftUI Hosting View Controller | Łukasz Śliwiński</title><meta name="twitter:title" content="Non Safe Area and Navigation Bar SwiftUI Hosting View Controller | Łukasz Śliwiński"/><meta name="og:title" content="Non Safe Area and Navigation Bar SwiftUI Hosting View Controller | Łukasz Śliwiński"/><meta name="description" content="Non Safe Area and Navigation Bar SwiftUI Hosting View Controller"/><meta name="twitter:description" content="Non Safe Area and Navigation Bar SwiftUI Hosting View Controller"/><meta name="og:description" content="Non Safe Area and Navigation Bar SwiftUI Hosting View Controller"/><meta http-equiv="cache-control" content="no-cache"/><meta http-equiv="expires" content="no-cache"/><meta http-equiv="pragma" content="no-cache"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><link rel="stylesheet" href="/code.css" type="text/css"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Łukasz Śliwiński"/></head><body class="item-page"><header><div class="wrapper"><div class="title"><a class="site-logo" href="/">📱</a><a class="site-name" href="/">Łukasz Śliwiński</a><a class="site-subname" href="/">Software Developer Blog</a></div><div class="avatar-wrapper"><a class="fa-brands fa-twitter" href="https://twitter.com/sliwinskilukas"></a><a class="fa-brands fa-linkedin" href="https://www.linkedin.com/in/łukasz-śliwiński-01b48a12a"></a><a class="avatar-link" href="https://github.com/nonameplum"><img src="https://avatars.githubusercontent.com/u/1753816?v=4" class="avatar"/></a></div></div></header><div class="wrapper"><article><div class="content"><p>How to hide navigation bar and fix the safe are issue while using UIHostingViewController</p><p>I created a <code>UIHostingViewController</code> that works for me since iOS 13.0, and solves the <code>NavigationBar</code> visibility issues and safe area in SwiftUI.</p><pre><code><span class="keyword">public final class</span> NonSafeAreaHostingController&lt;Content: <span class="type">View</span>&gt;: <span class="type">UIHostingController</span>&lt;<span class="type">Content</span>&gt; {
+    <span class="keyword">public var</span> navigationBarHidden = <span class="keyword">true
+    public var</span> statusBarHidden = <span class="keyword">true
+    public var</span> isEmbedded = <span class="keyword">false
+
+    override public func</span> viewDidLoad() {
+        <span class="keyword">super</span>.<span class="call">viewDidLoad</span>()
+        <span class="call">fixSafeAreaInsets</span>()
+    }
+
+    <span class="keyword">override public func</span> viewWillAppear(<span class="keyword">_</span> animated: <span class="type">Bool</span>) {
+        <span class="keyword">super</span>.<span class="call">viewWillAppear</span>(animated)
+        navigationController?.<span class="call">setNavigationBarHidden</span>(navigationBarHidden, animated: <span class="keyword">false</span>)
+    }
+
+    <span class="keyword">override public var</span> prefersStatusBarHidden: <span class="type">Bool</span> {
+        <span class="keyword">return</span> statusBarHidden
+    }
+
+    <span class="keyword">override public var</span> navigationController: <span class="type">UINavigationController</span>? {
+        isEmbedded ? <span class="keyword">nil</span> : <span class="keyword">super</span>.<span class="property">navigationController</span>
+    }
+
+    <span class="keyword">private func</span> fixSafeAreaInsets() {
+        <span class="keyword">guard let</span> _class = view?.<span class="property">classForCoder</span> <span class="keyword">else</span> {
+            <span class="keyword">return</span>
+        }
+
+        <span class="keyword">let</span> safeAreaInsets: <span class="keyword">@convention</span>(block) (<span class="type">AnyObject</span>)
+            -&gt; <span class="type">UIEdgeInsets</span> = { (<span class="keyword">_</span>: <span class="type">AnyObject</span>!) -&gt; <span class="type">UIEdgeInsets</span> <span class="keyword">in
+                return</span> .<span class="dotAccess">zero</span>
+            }
+
+        <span class="keyword">guard let</span> method = <span class="call">class_getInstanceMethod</span>(
+            _class.<span class="keyword">self</span>,
+            #selector(getter: <span class="type">UIView</span>.<span class="property">safeAreaInsets</span>)
+        )
+        <span class="keyword">else</span> {
+            <span class="keyword">return</span>
+        }
+
+        <span class="call">class_replaceMethod</span>(
+            _class,
+            #selector(getter: <span class="type">UIView</span>.<span class="property">safeAreaInsets</span>),
+            <span class="call">imp_implementationWithBlock</span>(safeAreaInsets),
+            <span class="call">method_getTypeEncoding</span>(method)
+        )
+
+        <span class="keyword">let</span> safeAreaLayoutGuide: <span class="keyword">@convention</span>(block) (<span class="type">AnyObject</span>)
+            -&gt; <span class="type">UILayoutGuide</span>? = { (<span class="keyword">_</span>: <span class="type">AnyObject</span>!) -&gt; <span class="type">UILayoutGuide</span>? <span class="keyword">in
+                return nil</span>
+            }
+
+        <span class="keyword">guard let</span> method2 = <span class="call">class_getInstanceMethod</span>(
+            _class.<span class="keyword">self</span>,
+            #selector(getter: <span class="type">UIView</span>.<span class="property">safeAreaLayoutGuide</span>)
+        )
+        <span class="keyword">else</span> {
+            <span class="keyword">return</span>
+        }
+
+        <span class="call">class_replaceMethod</span>(
+            _class,
+            #selector(getter: <span class="type">UIView</span>.<span class="property">safeAreaLayoutGuide</span>),
+            <span class="call">imp_implementationWithBlock</span>(safeAreaLayoutGuide),
+            <span class="call">method_getTypeEncoding</span>(method2)
+        )
+    }
+}
+</code></pre></div><span>Tagged with: </span><ul class="tag-list"><li style="background-color: #F6DA24;"><a href="/tags/swiftui">SwiftUI</a></li></ul></article></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>
